@@ -9,12 +9,12 @@ trigger:
      - master
  paths:
    include:
-   - "frontends/telemetry-dashboard"
+   - "frontends/TelemetryDashboard"
 
 variables:
     - group: frontend-vars
     - name: frontendPath
-      value: "frontends/telemetry-dashboard"
+      value: "frontends/TelemetryDashboard"
 
 pool:
   vmImage: 'ubuntu-latest'
