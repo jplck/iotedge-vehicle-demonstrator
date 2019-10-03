@@ -15,8 +15,8 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  path: 'libs/GPXParserLib'
-  solution: '$(path)/*.sln'
+  projectPath: 'libs/GPXParserLib'
+  solution: '$(projectPath)/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -31,7 +31,7 @@ steps:
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
-    projects: $(path)
+    projects: $(projectPath)
 
 - task: DotNetCoreCLI@2
   displayName: "dotnet pack"
@@ -39,7 +39,7 @@ steps:
     command: 'pack'
     arguments: '--configuration $(buildConfiguration)'
     nobuild: true
-    projects: $(path)
+    projects: $(projectPath)
 
 - task: NuGetCommand@2
   displayName: 'nuget push'
