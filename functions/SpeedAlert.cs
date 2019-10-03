@@ -57,21 +57,9 @@ namespace VehicleServices
         }
 
         [FunctionName("SetSpeedAlert")]
-        public static async Task<HttpResponseMessage> SetSpeedAlert([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req, ILogger log, ClaimsPrincipal claimsPrincipal)
+        public static async Task<HttpResponseMessage> SetSpeedAlert([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req, ILogger log)
         {
-            
-            if (claimsPrincipal.Identity.IsAuthenticated)
-            {
-                var claims = claimsPrincipal.Claims;
-                foreach (Claim claim in claims)
-                {
-                    log.LogInformation(claim.Type);
-                    log.LogInformation(claim.Value);
-                }
-                return req.CreateResponse(200);
-            }
-          
-            return await Task.FromResult(req.CreateResponse(401));
+            return await Task.FromResult(req.CreateResponse(200));
         }
     }
 }
