@@ -1,0 +1,47 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+ branches:
+   include:
+     - master
+ paths:
+   include:
+   - "frontends/telemetry-dashboard"
+
+variables:
+    - group: frontend-vars
+    - name: frontendPath
+      value: "frontends/telemetry-dashboard"
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '$(frontendPath)'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: '$(frontendPath)'
+    customCommand: 'run build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(frontendPath)/build'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

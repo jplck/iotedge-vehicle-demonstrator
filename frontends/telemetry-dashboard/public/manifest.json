@@ -1,0 +1,6 @@
+{
+  "short_name": "Telemetry Dashboard",
+  "name": "Vehicle Telemetry dashboard frontend.",
+  "start_url": ".",
+  "display": "standalone"
+}

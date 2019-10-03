@@ -1,0 +1,72 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+ branches:
+   include:
+     - master
+ paths:
+   include:
+   - "edge"
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: 'iot-module-env-vars'
+  - name: 'TEST'
+    value: "Demo1"
+
+steps:
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'env | sort'
+
+- task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: '5.2.0'
+    checkLatest: true
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: 'edge/vehicle-telemetry-modules/*.sln'
+    feedsToUse: 'select'
+    vstsFeed: '0acd8655-2a3c-4364-83c7-ab21217da7b7'
+    restoreDirectory: 'NugetPackage'
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      for folder in edge/*module; do
+          echo "$(basename "$folder")"
+          cp -r "edge/vehicle-telemetry-modules/NugetPackage" "$folder"
+      done
+      
+- task: AzureIoTEdge@2
+  inputs:
+    action: 'Build module images'
+    templateFilePath: 'edge/vehicle-telemetry-modules/deployment.template.json'
+    defaultPlatform: 'amd64'
+
+- task: AzureIoTEdge@2
+  inputs:
+    action: 'Push module images'
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscriptionEndpoint: 'Azure Internal Consumption(ef4a11cd-7f45-41ab-b4a3-02776b287779)'
+    azureContainerRegistry: '{"loginServer":"iotmoduleregistry.azurecr.io", "id" : "/subscriptions/ef4a11cd-7f45-41ab-b4a3-02776b287779/resourceGroups/iot-demo-rg/providers/Microsoft.ContainerRegistry/registries/iotmoduleregistry"}'
+    templateFilePath: 'edge/vehicle-telemetry-modules/deployment.template.json'
+    defaultPlatform: 'amd64'
+    fillRegistryCredential: 'true'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+

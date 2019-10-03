@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{34036844-64E7-43A5-9151-4AD90E180989}") = "vehicle_telemetry_modules", "vehicle_telemetry_modules.iotedgeproj", "{1420C7A4-FACB-40F6-A8A1-E27BBA08BA85}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "locationmodule", "..\locationmodule\locationmodule.csproj", "{1A623E3A-31D2-4ACA-B238-52D31264C95A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "telemetrydispatchermodule", "..\telemetrydispatchermodule\telemetrydispatchermodule.csproj", "{3E129B65-5424-4B10-BAA6-D5FD8503D401}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "odometermodule", "..\odometermodule\odometermodule.csproj", "{F585BCC3-CC3A-4E8C-A5B8-E351903626DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1420C7A4-FACB-40F6-A8A1-E27BBA08BA85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1420C7A4-FACB-40F6-A8A1-E27BBA08BA85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1420C7A4-FACB-40F6-A8A1-E27BBA08BA85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1420C7A4-FACB-40F6-A8A1-E27BBA08BA85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A623E3A-31D2-4ACA-B238-52D31264C95A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A623E3A-31D2-4ACA-B238-52D31264C95A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A623E3A-31D2-4ACA-B238-52D31264C95A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A623E3A-31D2-4ACA-B238-52D31264C95A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E129B65-5424-4B10-BAA6-D5FD8503D401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E129B65-5424-4B10-BAA6-D5FD8503D401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E129B65-5424-4B10-BAA6-D5FD8503D401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E129B65-5424-4B10-BAA6-D5FD8503D401}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F585BCC3-CC3A-4E8C-A5B8-E351903626DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F585BCC3-CC3A-4E8C-A5B8-E351903626DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F585BCC3-CC3A-4E8C-A5B8-E351903626DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F585BCC3-CC3A-4E8C-A5B8-E351903626DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE8D4F12-AC29-42FC-96E9-A49DA702DDD5}
+	EndGlobalSection
+EndGlobal
