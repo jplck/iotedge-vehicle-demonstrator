@@ -97,9 +97,7 @@
           "odometermoduleToLocationmodule": "FROM /messages/modules/odometermodule/outputs/odometerOutput INTO BrokeredEndpoint(\"/modules/locationmodule/inputs/odometerInput\")",
           "telemetrydispatchermoduleToIoTHub": "FROM /messages/modules/telemetrydispatchermodule/outputs/* INTO $upstream",
           "odometermoduleToDispatcher": "FROM /messages/modules/odometermodule/outputs/odometerOutput INTO BrokeredEndpoint(\"/modules/telemetrydispatchermodule/inputs/telemetryInput\")",
-          "locationmoduleToDispatcher": "FROM /messages/modules/locationmodule/outputs/locationModuleOutput INTO BrokeredEndpoint(\"/modules/telemetrydispatchermodule/inputs/telemetryInput\")",
-          "locationmoduleToIoTHub": "FROM /messages/modules/locationmodule/outputs/* INTO $upstream",
-          "odometermoduleToIoTHub": "FROM /messages/modules/odometermodule/outputs/* INTO $upstream"
+          "locationmoduleToDispatcher": "FROM /messages/modules/locationmodule/outputs/locationModuleOutput INTO BrokeredEndpoint(\"/modules/telemetrydispatchermodule/inputs/telemetryInput\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
