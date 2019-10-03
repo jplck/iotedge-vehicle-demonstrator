@@ -72,7 +72,11 @@ namespace locationmodule
         {
             if (_sim != null)
             {
+                Console.BackgroundColor = ConsoleColor.DarkYellow;
+                Console.ForegroundColor = ConsoleColor.White;
                 _sim.UpdateInterval = twin.UpdateInterval;
+                Console.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.");
+                Console.ResetColor();
             }
 
         }
