@@ -1,7 +1,7 @@
 ﻿using System;
-using TelemetryLib;
+using VehicleDemonstrator.Shared.Telemetry.Location;
 
-namespace locationmodule
+namespace VehicleDemonstrator.Module.Location
 {
     /*
      * The code in this class is based on the awesome documentation found 

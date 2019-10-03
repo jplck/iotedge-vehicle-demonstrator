@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectivtyUtilLib", "ConnectivtyUtilLib.csproj", "{DEC3F89D-EFFD-48CC-923E-E0FCCF946106}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEC3F89D-EFFD-48CC-923E-E0FCCF946106}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEC3F89D-EFFD-48CC-923E-E0FCCF946106}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEC3F89D-EFFD-48CC-923E-E0FCCF946106}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEC3F89D-EFFD-48CC-923E-E0FCCF946106}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {17795799-F5F9-4CA4-90BC-6F16D3856007}
+	EndGlobalSection
+EndGlobal

@@ -1,11 +1,11 @@
-namespace odometermodule
+namespace VehicleDemonstrator.Module.Odometer
 {
     using System;
     using System.Runtime.Loader;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Devices.Client;
-    using TelemetryLib;
+    using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
     class Program
     {

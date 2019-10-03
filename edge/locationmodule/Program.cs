@@ -1,4 +1,4 @@
-namespace locationmodule
+namespace VehicleDemonstrator.Module.Location
 {
     using System;
     using System.Runtime.Loader;

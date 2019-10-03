@@ -1,6 +1,6 @@
 {
-    "$schema-version": "0.0.1",
-    "description": "",
+  "$schema-version": "0.0.1",
+  "description": "",
   "image": {
     "repository": "$REGHOST/odometermodule",
     "tag": {
@@ -16,5 +16,5 @@
     "buildOptions": [],
     "contextPath": "./"
   },
-    "language": "csharp"
+  "language": "csharp"
 }

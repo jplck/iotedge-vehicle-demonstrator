@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="gpx-parser-lib" Version="0.2.1" />
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.21.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
@@ -32,7 +31,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="telemetry-object-lib" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libs\ConnectivtyUtilLib\ConnectivtyUtilLib.csproj" />
+    <ProjectReference Include="..\..\libs\GPXParserLib\GPXParserLib.csproj" />
+    <ProjectReference Include="..\..\libs\TelemetryObjectLib\TelemetryObjectLib.csproj" />
   </ItemGroup>
   
 </Project>

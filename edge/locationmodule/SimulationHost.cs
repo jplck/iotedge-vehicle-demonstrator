@@ -1,12 +1,15 @@
-﻿using GPXParserLib;
-using Microsoft.Azure.Devices.Client;
+﻿using Microsoft.Azure.Devices.Client;
 using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TelemetryLib;
+using VehicleDemonstrator.Shared.Connectivity;
+using VehicleDemonstrator.Shared.Util;
+using VehicleDemonstrator.Shared.GPX;
+using VehicleDemonstrator.Shared.Telemetry;
+using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
-namespace locationmodule
+namespace VehicleDemonstrator.Module.Location
 {
     class SimulationHost : IModuleTwin, ISimulationHost
     {

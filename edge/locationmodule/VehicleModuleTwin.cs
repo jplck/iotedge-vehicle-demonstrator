@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.Devices.Shared;
+﻿using Microsoft.Azure.Devices.Shared;
+using VehicleDemonstrator.Shared.Connectivity;
 
-namespace locationmodule
+namespace VehicleDemonstrator.Module.Location
 {
     interface IModuleTwin
     {

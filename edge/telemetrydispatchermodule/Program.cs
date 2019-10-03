@@ -1,4 +1,4 @@
-namespace telemetrydispatchermodule
+namespace VehicleDemonstrator.Module.TelemetryDispatcher
 {
     using System;
     using System.Runtime.Loader;
@@ -6,7 +6,9 @@ namespace telemetrydispatchermodule
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Devices.Client;
-    using TelemetryLib;
+    using VehicleDemonstrator.Shared.Telemetry;
+    using VehicleDemonstrator.Shared.Telemetry.Location;
+    using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
     class Program
     {

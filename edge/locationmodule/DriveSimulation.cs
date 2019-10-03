@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using GPXParserLib;
-using TelemetryLib;
+using VehicleDemonstrator.Shared.GPX;
+using VehicleDemonstrator.Shared.GPX.Route;
+using VehicleDemonstrator.Shared.GPX.Track;
+using VehicleDemonstrator.Shared.Telemetry;
+using VehicleDemonstrator.Shared.Telemetry.Location;
+using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
-namespace locationmodule
+namespace VehicleDemonstrator.Module.Location
 {
     interface ISimulationReceiver
     {
