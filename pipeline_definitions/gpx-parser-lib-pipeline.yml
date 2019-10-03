@@ -9,13 +9,13 @@ trigger:
      - master
  paths:
    include:
-   - "libs/gpx-parser-lib"
+   - "libs/GPXParserLib"
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
-  path: 'libs/gpx-parser-lib'
+  path: 'libs/GPXParserLib'
   solution: '$(path)/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
