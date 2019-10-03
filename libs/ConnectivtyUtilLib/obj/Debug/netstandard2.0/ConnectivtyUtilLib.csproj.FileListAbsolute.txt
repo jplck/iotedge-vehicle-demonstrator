@@ -1,9 +1,0 @@
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\bin\Debug\netstandard2.0\ConnectivtyUtilLib.deps.json
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\bin\Debug\netstandard2.0\ConnectivtyUtilLib.dll
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netstandard2.0\ConnectivtyUtilLib.csproj.CoreCompileInputs.cache
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netstandard2.0\ConnectivtyUtilLib.AssemblyInfoInputs.cache
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netstandard2.0\ConnectivtyUtilLib.AssemblyInfo.cs
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\bin\Debug\netstandard2.0\ConnectivtyUtilLib.pdb
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netstandard2.0\ConnectivtyUtilLib.dll
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netstandard2.0\ConnectivtyUtilLib.pdb
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netstandard2.0\ConnectivtyUtilLib.csprojAssemblyReference.cache

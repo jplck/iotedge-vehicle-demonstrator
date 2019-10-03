@@ -1,8 +1,0 @@
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\bin\Debug\netcoreapp2.1\ConnectivtyUtilLib.deps.json
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\bin\Debug\netcoreapp2.1\ConnectivtyUtilLib.dll
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\bin\Debug\netcoreapp2.1\ConnectivtyUtilLib.pdb
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netcoreapp2.1\ConnectivtyUtilLib.csproj.CoreCompileInputs.cache
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netcoreapp2.1\ConnectivtyUtilLib.AssemblyInfoInputs.cache
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netcoreapp2.1\ConnectivtyUtilLib.AssemblyInfo.cs
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netcoreapp2.1\ConnectivtyUtilLib.dll
-D:\Development\C#\iotedge-vehicle-demonstrator\libs\connectivty-util-lib\obj\Debug\netcoreapp2.1\ConnectivtyUtilLib.pdb
