@@ -15,7 +15,8 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: 'libs/TelemetryObjectLib/*.sln'
+  projectPath: 'libs/TelemetryObjectLib'
+  solution: '${projectPath}/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -34,6 +35,7 @@ steps:
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
+    projects: ${projectPath}
 
 - task: DotNetCoreCLI@2
   displayName: "dotnet pack"
@@ -41,7 +43,8 @@ steps:
     command: 'pack'
     arguments: '--configuration $(buildConfiguration)'
     nobuild: true
-
+    packagesToPack: '${projectPath}/*.csproj'
+    
 - task: NuGetCommand@2
   displayName: 'nuget push'
   inputs:
