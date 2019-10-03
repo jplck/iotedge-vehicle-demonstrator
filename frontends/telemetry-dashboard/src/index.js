@@ -2,8 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { runWithAdal } from 'react-adal';
+import adalContext, { authContext } from './adalConfig';
 import 'react-notifications-component/dist/theme.css'
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const DO_NOT_LOGIN = false;
 
-serviceWorker.unregister();
+runWithAdal(authContext, () => {
+    adalContext.GetToken()
+    .then(token => {
+        console.log(token);
+        ReactDOM.render(<App authToken={token}/>, document.getElementById('root'));
+
+        serviceWorker.unregister();
+   });
+}, DO_NOT_LOGIN);

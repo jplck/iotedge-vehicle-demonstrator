@@ -10,6 +10,7 @@
     "bootstrap-styled": "^2.5.0",
     "leaflet": "^1.5.1",
     "react": "next",
+    "react-adal": "^0.4.24",
     "react-dom": "next",
     "react-leaflet": "^2.4.0",
     "react-notifications-component": "^2.1.0",

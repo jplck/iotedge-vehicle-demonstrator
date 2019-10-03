@@ -30,7 +30,7 @@ class App extends React.Component
   componentDidMount() {
 
     var hubConnectionRef = new HubConnectionBuilder()
-      .withUrl(process.env.REACT_APP_HUB_URL)
+      .withUrl(process.env.REACT_APP_HUB_URL, { accessTokenFactory: () => this.props.authToken })
       .build();
 
     hubConnectionRef.start().then(
@@ -71,7 +71,7 @@ class App extends React.Component
               <LiveTripTile hubConnection={this.state.hubConnection}/>
             </Col>
             <Col className="col-2">
-              <SpeedAlertTile />
+              <SpeedAlertTile authToken={this.props.authToken}/>
             </Col>
           </Row>
         </Container>

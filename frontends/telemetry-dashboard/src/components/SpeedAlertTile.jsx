@@ -14,7 +14,12 @@ class SpeedAlertTile extends React.Component
 
     async setSpeedAlert()
     {
-        const response = await Axios.post('https://vehicle-services.azurewebsites.net/api/SetSpeedAlert', null)
+        const response = await Axios.post('https://vehicle-services.azurewebsites.net/api/SetSpeedAlert', null, {
+            headers: {
+                'Authorization': `Bearer ${this.props.authToken}`
+            }
+        }
+        )
         console.log(response)
     }
 
