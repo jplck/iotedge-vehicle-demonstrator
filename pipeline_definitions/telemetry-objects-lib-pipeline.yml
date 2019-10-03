@@ -9,13 +9,13 @@ trigger:
      - master
  paths:
    include:
-   - "libs/telemetry-object-lib"
+   - "libs/TelemetryObjectLib"
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: 'libs/telemetry-object-lib/*.sln'
+  solution: 'libs/TelemetryObjectLib/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
