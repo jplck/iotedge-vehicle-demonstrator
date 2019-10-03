@@ -33,9 +33,9 @@ class LiveTripTile extends React.Component
         }
     }
 
-    componentWillReceiveProps(props)
+    componentDidMount()
     {
-        const connection = props.hubConnection;
+        const connection = this.props.hubConnection;
         if (connection === null) {
             return;
         }

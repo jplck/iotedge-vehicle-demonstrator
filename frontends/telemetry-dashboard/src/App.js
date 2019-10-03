@@ -1,10 +1,11 @@
 import React from 'react';
 import { HubConnectionBuilder } from '@aspnet/signalr';
 import {createGlobalStyle} from 'styled-components'
-import {Row, Col, Container} from '@bootstrap-styled/v4'
+import {Row, Col, Container} from 'react-bootstrap'
 import LiveTripTile from './components/LiveTripTile'
 import SpeedAlertTile from './components/SpeedAlertTile'
-import ReactNotification, { store } from 'react-notifications-component'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -44,33 +45,31 @@ class App extends React.Component
 
   setupListeners(hubConnection) {
     hubConnection.on('speedAlerts', (speedAlertInfoMsg) => {
-      store.addNotification({
-        title: "Speed alert!",
-        message: "You have exeeded your speed limit.",
-        type: "danger",
-        insert: "top",
-        container: "top-right",
-        animationIn: ["animated", "fadeIn"],
-        animationOut: ["animated", "fadeOut"],
-        dismiss: {
-          duration: 3000,
-          onScreen: true
-        }
-      });
+      toast.warn("Your vehicle exeeded your speed alert limit.", {
+        position: toast.POSITION.TOP_RIGHT
+      })
     });
+  }
+
+  showMap() {
+    if (this.state.hubConnection != null) {
+      return <LiveTripTile hubConnection={this.state.hubConnection}/>
+    }
+    return <div>loading...</div>
   }
 
   render() {
     return (
       <React.Fragment>
+        <ToastContainer />
         <GlobalStyle />
-        <ReactNotification />
+        
         <Container>
           <Row>
-            <Col className="col-10">
-              <LiveTripTile hubConnection={this.state.hubConnection}/>
+            <Col className="col-9">
+              {this.showMap()}
             </Col>
-            <Col className="col-2">
+            <Col className="col-3">
               <SpeedAlertTile />
             </Col>
           </Row>
