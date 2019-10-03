@@ -39,7 +39,7 @@ steps:
     command: 'pack'
     arguments: '--configuration $(buildConfiguration)'
     nobuild: true
-    projects: $(projectPath)
+    packagesToPack: $(projectPath)/*.csproj
 
 - task: NuGetCommand@2
   displayName: 'nuget push'
