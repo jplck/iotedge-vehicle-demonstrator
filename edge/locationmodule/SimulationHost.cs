@@ -8,33 +8,29 @@ using TelemetryLib;
 
 namespace locationmodule
 {
-    class SimulationHost : HubConnection, IModuleTwin, ISimulationHost
+    class SimulationHost : IModuleTwin, ISimulationHost
     {
         private DriveSimulation _sim;
-        private ModuleTwin _twin;
+        private VehicleModuleTwin _twin;
         private CancellationTokenSource _cts;
+        private bool _simStatus = false;
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
 
         public async Task Setup()
         {
-            await Connect();
+            var hub = HubConnection.Instance;
+            await hub.Connect();
 
-            var client = GetClient();
+            var client = hub.GetClient();
 
-            if (client != null)
-            {
-                _twin = new ModuleTwin(client, this);
-                await _twin.Init();
+            _twin = new VehicleModuleTwin(this);
+            await _twin.Init();
 
-                await client.SetMethodHandlerAsync("Stop", OnStopRequest, null);
-                await client.SetMethodHandlerAsync("Reset", OnResetRequest, null);
-                await client.SetInputMessageHandlerAsync(OdometerInputName, OdometerMessageReceivedAsync, client);
-            }
-            else
-            {
-                Console.WriteLine("Error: No client set.");
-            }
+            await client.SetMethodHandlerAsync("Stop", OnStopRequest, null);
+            await client.SetMethodHandlerAsync("Reset", OnResetRequest, null);
+            await client.SetInputMessageHandlerAsync(OdometerInputName, OdometerMessageReceivedAsync, null);
+
         }
 
         public async Task Run()
@@ -44,20 +40,22 @@ namespace locationmodule
                 _cts = new CancellationTokenSource();
                 GPX gpx = GPXReader.Read(_twin.RouteFile);
                 _sim = new DriveSimulation(gpx, _twin.UpdateInterval, this, _cts.Token);
+                _simStatus = true;
                 _twin.SimulationStatus = true;
                 await _twin.SendReportedProperties();
                 await _sim.Run(SimulationRunType.Track);
             }
-            catch (Exception cancellationException)
+            catch (OperationCanceledException)
             {
-                Console.WriteLine(cancellationException.Message);
-                Console.WriteLine("Simulation run cancelled or stopped on request.");
+                _simStatus = false;
                 _twin.SimulationStatus = false;
                 await _twin.SendReportedProperties();
+
+                Helper.WriteLine("Simulation run cancelled or stopped on request.", ConsoleColor.White, ConsoleColor.DarkRed);
             }
         }
 
-        public void Stop()
+        public async Task Stop()
         {
             if (_cts != null)
             {
@@ -65,31 +63,35 @@ namespace locationmodule
                 _cts.Dispose();
                 _sim = null;
                 _cts = null;
+
+                while (_simStatus)
+                {
+                    Helper.WriteLine("Waiting for simulation to stop...", ConsoleColor.White, ConsoleColor.DarkYellow);
+                    await Task.Delay(250);
+                }
             }
         }
 
-        public void UpdatedDesiredPropertiesReceived(ModuleTwin twin)
+        public void DeviceTwinUpdateReceived(VehicleModuleTwin twin)
         {
             if (_sim != null)
             {
-                Console.BackgroundColor = ConsoleColor.DarkYellow;
-                Console.ForegroundColor = ConsoleColor.White;
                 _sim.UpdateInterval = twin.UpdateInterval;
-                Console.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.");
-                Console.ResetColor();
+                Helper.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
             }
 
         }
 
         private async Task<MethodResponse> OnStopRequest(MethodRequest request, object context)
         {
-            Stop();
+            await Stop();
             return await Task.FromResult(new MethodResponse(200));
         }
 
         private async Task<MethodResponse> OnResetRequest(MethodRequest request, object context)
         {
-            Stop();
+            Helper.WriteLine("Resetting simulation...", ConsoleColor.White, ConsoleColor.DarkGreen);
+            await Stop();
             _ = Run();
             return await Task.FromResult(new MethodResponse(200));
         }
@@ -98,7 +100,7 @@ namespace locationmodule
         {
             Console.WriteLine(telemetry.ToJson());
             Message coordMsg = new Message(telemetry.ToJsonByteArray());
-            GetClient().SendEventAsync(OutputName, coordMsg);
+            HubConnection.Instance.GetClient().SendEventAsync(OutputName, coordMsg);
         }
 
         private async Task<MessageResponse> OdometerMessageReceivedAsync(Message message, object userContext)

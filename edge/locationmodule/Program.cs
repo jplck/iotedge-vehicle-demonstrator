@@ -10,7 +10,6 @@ namespace locationmodule
         static void Main(string[] args)
         {
             Init().Wait();
-
             var cts = new CancellationTokenSource();
             AssemblyLoadContext.Default.Unloading += (ctx) => cts.Cancel();
             Console.CancelKeyPress += (sender, cpe) => cts.Cancel();

@@ -8,68 +8,43 @@ using Microsoft.Azure.Devices.Shared;
 
 namespace locationmodule
 {
-
-    interface IModuleTwin
+    abstract class ModuleTwin
     {
-        void UpdatedDesiredPropertiesReceived(ModuleTwin twin);
-    }
+        private HubConnection _hub;
 
-    class ModuleTwin
-    {
-        public string RouteFile { get; set; }
-        public int UpdateInterval { get; set; }
-
-        public bool SimulationStatus { get; set; }
-
-        private string _routeFileDefault = "routes/gpx2.gpx";
-        private int _updateIntervalDefault = 1000;
-
-        private ModuleClient _client;
-
-        private IModuleTwin _delegate;
-
-        public ModuleTwin(ModuleClient client, IModuleTwin twinDelegate)
+        public ModuleTwin()
         {
-            _client = client;
-            RouteFile = "routes/gpx1.gpx";
-            UpdateInterval = 1000;
-            SimulationStatus = true;
-            _delegate = twinDelegate;
+            _hub = HubConnection.Instance;
         }
 
         public async Task Init()
         {
-            await _client.SetDesiredPropertyUpdateCallbackAsync(DesiredPropertiesCallback, null);
+            await _hub.GetClient().SetDesiredPropertyUpdateCallbackAsync(DesiredPropertiesCallback, null);
             await LoadTwin();
         }
 
         private async Task LoadTwin()
         {
-            var twin = await _client.GetTwinAsync();
+            var twin = await _hub.GetClient().GetTwinAsync();
             await DesiredPropertiesCallback(twin.Properties.Desired, null);
         }
 
         private async Task DesiredPropertiesCallback(TwinCollection desiredProperties, object userContext)
         {
-            RouteFile = !desiredProperties.Contains("RouteFile") ? _routeFileDefault : desiredProperties["RouteFile"];
-            UpdateInterval = !desiredProperties.Contains("UpdateInterval") ? _updateIntervalDefault : desiredProperties["UpdateInterval"];
+            UpdatedDesiredPropertiesReceived(desiredProperties);
 
+            /*Update reported properties at the end to include changed made in the delegate 
+              method UpdatedDesiredPropertiesReceived as well.
+            */
             await SendReportedProperties();
-            if (_delegate != null)
-            {
-                _delegate.UpdatedDesiredPropertiesReceived(this);
-            }
         }
 
         public async Task SendReportedProperties()
         {
-            TwinCollection reportedProperties = new TwinCollection
-            {
-                ["RouteFile"] = RouteFile,
-                ["UpdateInterval"] = UpdateInterval,
-                ["SimulationStatus"] = SimulationStatus
-            };
-            await _client.UpdateReportedPropertiesAsync(reportedProperties);
+            await _hub.GetClient().UpdateReportedPropertiesAsync(ProvideReportedProperties());
         }
+
+        public abstract void UpdatedDesiredPropertiesReceived(TwinCollection desiredProperties);
+        public abstract TwinCollection ProvideReportedProperties();
     }
 }
