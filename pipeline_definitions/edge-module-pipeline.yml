@@ -29,4 +29,5 @@ steps:
   inputs:
     command: 'publish'
     arguments: 'publish -c Release -o out'
+    publishWebProjects: false
 
