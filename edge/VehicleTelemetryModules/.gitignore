@@ -32,5 +32,6 @@ artifacts/
 .env
 
 [Bb]in/
+[Oo]ut/
 [Oo]bj/
 config/

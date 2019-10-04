@@ -31,5 +31,6 @@ artifacts/
 .vs
 
 [Bb]in/
+[Oo]ut/
 [Oo]bj/
 NugetPackage
