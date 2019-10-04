@@ -26,7 +26,7 @@ steps:
     script: |
       for folder in edge/*Module; do
           echo "$(basename "$folder")"
-          dotnet publish -c Release -o out $folder/$folder.csproj
+          dotnet publish -c Release -o out $folder/$(basename "$folder").csproj
       done
 
 - task: Bash@3
