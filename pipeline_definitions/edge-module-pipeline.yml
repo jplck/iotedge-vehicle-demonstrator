@@ -27,6 +27,6 @@ steps:
       
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'build'
-    projects: '$(ProjectPath)/*.sln'
+    command: 'publish'
+    arguments: 'publish -c Release -o out'
 
