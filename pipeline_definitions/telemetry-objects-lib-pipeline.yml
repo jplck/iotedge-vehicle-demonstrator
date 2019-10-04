@@ -35,7 +35,7 @@ steps:
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
-    projects: ${projectPath}
+    projects: $(projectPath)/*.csproj
 
 - task: DotNetCoreCLI@2
   displayName: "dotnet pack"
