@@ -23,10 +23,13 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'inline'
-    script: 'env | sort'
-      
-- task: DotNetCoreCLI@2
+    script: |
+      for folder in edge/*Module; do
+          echo "$(basename "$folder")"
+          dotnet publish -c Release -o out $folder/$folder.csproj
+      done
+
+- task: Bash@3
   inputs:
-    command: 'build'
-    projects: '$(ProjectPath)/*.sln'
-    arguments: '-o out'
+    targetType: 'inline'
+    script: 'env | sort'
