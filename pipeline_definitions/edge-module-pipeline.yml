@@ -29,7 +29,8 @@ steps:
           dotnet publish -c Release -o out $folder/$(basename "$folder").csproj
       done
 
-- task: Bash@3
+- task: AzureIoTEdge@2
   inputs:
-    targetType: 'inline'
-    script: 'env | sort'
+    action: 'Build module images'
+    templateFilePath: '$(ProjectPath)/deployment.template.json'
+    defaultPlatform: 'amd64'
