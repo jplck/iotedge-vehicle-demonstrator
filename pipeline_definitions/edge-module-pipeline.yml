@@ -27,7 +27,6 @@ steps:
       
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'publish'
-    arguments: 'publish -c Release -o out'
-    publishWebProjects: false
-    workingDirectory: '$(ProjectPath)/*.csproj'
+    command: 'build'
+    projects: '$(ProjectPath)/*.csproj'
+    arguments: '-o out'
