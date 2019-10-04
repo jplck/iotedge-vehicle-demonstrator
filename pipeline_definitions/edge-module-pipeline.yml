@@ -16,9 +16,10 @@ pool:
 
 variables:
   - group: 'iot-module-env-vars'
+  - name: ProjectPath
+    value: "edge/VehicleTelemetryModules"
 
 steps:
-
 - task: Bash@3
   inputs:
     targetType: 'inline'
@@ -27,7 +28,7 @@ steps:
 - task: AzureIoTEdge@2
   inputs:
     action: 'Build module images'
-    templateFilePath: 'edge/vehicle-telemetry-modules/deployment.template.json'
+    templateFilePath: '$(ProjectPath)/deployment.template.json'
     defaultPlatform: 'amd64'
 
 - task: AzureIoTEdge@2
@@ -36,7 +37,7 @@ steps:
     containerregistrytype: 'Azure Container Registry'
     azureSubscriptionEndpoint: 'Azure Internal Consumption(ef4a11cd-7f45-41ab-b4a3-02776b287779)'
     azureContainerRegistry: '{"loginServer":"iotmoduleregistry.azurecr.io", "id" : "/subscriptions/ef4a11cd-7f45-41ab-b4a3-02776b287779/resourceGroups/iot-demo-rg/providers/Microsoft.ContainerRegistry/registries/iotmoduleregistry"}'
-    templateFilePath: 'edge/vehicle-telemetry-modules/deployment.template.json'
+    templateFilePath: '$(ProjectPath)/deployment.template.json'
     defaultPlatform: 'amd64'
     fillRegistryCredential: 'true'
 
