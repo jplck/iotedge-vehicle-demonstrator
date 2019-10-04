@@ -16,8 +16,6 @@ pool:
 
 variables:
   - group: 'iot-module-env-vars'
-  - name: 'TEST'
-    value: "Demo1"
 
 steps:
 
@@ -25,28 +23,6 @@ steps:
   inputs:
     targetType: 'inline'
     script: 'env | sort'
-
-- task: NuGetToolInstaller@1
-  inputs:
-    versionSpec: '5.2.0'
-    checkLatest: true
-
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: 'edge/vehicle-telemetry-modules/*.sln'
-    feedsToUse: 'select'
-    vstsFeed: '0acd8655-2a3c-4364-83c7-ab21217da7b7'
-    restoreDirectory: 'NugetPackage'
-
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      for folder in edge/*module; do
-          echo "$(basename "$folder")"
-          cp -r "edge/vehicle-telemetry-modules/NugetPackage" "$folder"
-      done
       
 - task: AzureIoTEdge@2
   inputs:
