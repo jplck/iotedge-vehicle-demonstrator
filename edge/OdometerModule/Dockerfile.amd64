@@ -1,0 +1,8 @@
+FROM microsoft/dotnet:2.1-sdk
+WORKDIR /app
+COPY ./out ./
+
+RUN useradd -ms /bin/bash moduleuser
+USER moduleuser
+
+ENTRYPOINT ["dotnet", "OdometerModule.dll"]
