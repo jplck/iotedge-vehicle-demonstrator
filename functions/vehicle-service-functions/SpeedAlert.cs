@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace VehicleServices
 {
@@ -57,9 +58,9 @@ namespace VehicleServices
         }
 
         [FunctionName("SetSpeedAlert")]
-        public static async Task<HttpResponseMessage> SetSpeedAlert([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req, ILogger log)
+        public static IActionResult SetSpeedAlert([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
         {
-            return await Task.FromResult(req.CreateResponse(200));
+            return (ActionResult)new OkObjectResult(200);
         }
     }
 }
