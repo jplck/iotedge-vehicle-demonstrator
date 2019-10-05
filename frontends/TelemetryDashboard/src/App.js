@@ -29,9 +29,9 @@ class App extends React.Component
   }
 
   componentDidMount() {
-
+    console.log(this.props.authToken)
     var hubConnectionRef = new HubConnectionBuilder()
-      .withUrl(process.env.REACT_APP_HUB_URL)
+      .withUrl(process.env.REACT_APP_HUB_URL, { accessTokenFactory: () => this.props.authToken })
       .build();
 
     hubConnectionRef.start().then(
