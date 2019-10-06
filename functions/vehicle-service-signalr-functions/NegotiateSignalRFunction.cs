@@ -12,14 +12,12 @@ namespace VehicleServices
     public static class NegotiateSignalRFunction
     {
         [FunctionName("negotiate")]
-        public static IActionResult Run(
+        public static SignalRConnectionInfo GetSignalRInfo(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req, [SignalRConnectionInfo(HubName = "telematicshub")] SignalRConnectionInfo info,
             ILogger log)
         {
-            
-            return info != null
-                ? (ActionResult)new OkObjectResult(info)
-                : new NotFoundObjectResult("Failed to load SignalR info.");
+
+            return info;
         }
 
         [FunctionName("addToGroup")]
@@ -28,7 +26,7 @@ namespace VehicleServices
         ClaimsPrincipal claimsPrincipal,
         [SignalR(HubName = "chat")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
-            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.Name);
+            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
             var userId = userIdClaim.Value;
             var groupName = "myGroup";
             return signalRGroupActions.AddAsync(

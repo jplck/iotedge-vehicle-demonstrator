@@ -23,37 +23,28 @@ class App extends React.Component
       this.state = {
         odometry: {
           MeasuredSpeed: 0,
-          SpeedLimit: 80
-        }
+          SpeedLimit: 80,
+        },
+        websocket: null
       }
   }
 
   componentDidMount() {
     console.log(this.props.authToken)
     var hubConnectionRef = new HubConnectionBuilder()
-      .withUrl(process.env.REACT_APP_HUB_URL, { accessTokenFactory: () => this.props.authToken })
+      .withUrl(process.env.REACT_APP_HUB_URL, { accessTokenFactory: () => this.props.signalRToken })
       .build();
 
     hubConnectionRef.start().then(
       this.setState({
-        hubConnection: hubConnectionRef
+        websocket: hubConnectionRef
       })
-    ).then(
-      this.setupListeners(hubConnectionRef)
     )
   }
 
-  setupListeners(hubConnection) {
-    hubConnection.on('speedAlerts', (speedAlertInfoMsg) => {
-      toast.warn("Your vehicle exeeded your speed alert limit.", {
-        position: toast.POSITION.TOP_RIGHT
-      })
-    });
-  }
-
   showMap() {
-    if (this.state.hubConnection != null) {
-      return <LiveTripTile hubConnection={this.state.hubConnection}/>
+    if (this.state.websocket != null) {
+      return <LiveTripTile hubConnection={this.state.websocket}/>
     }
     return <div>loading...</div>
   }
@@ -70,7 +61,7 @@ class App extends React.Component
               {this.showMap()}
             </Col>
             <Col className="col-3">
-              <SpeedAlertTile />
+              <SpeedAlertTile websocket={this.state.websocket}/>
             </Col>
           </Row>
         </Container>

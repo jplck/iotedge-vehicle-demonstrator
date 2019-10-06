@@ -6,7 +6,8 @@ export const adalConfig = {
   tenant: process.env.REACT_APP_TENANT_ID,
   clientId: process.env.REACT_APP_CLIENT_ID,
   endpoints: {
-    api: process.env.REACT_APP_SERVICES_CLIENT_ID,
+    vehicleServiceApi: process.env.REACT_APP_SERVICES_CLIENT_ID,
+    signalRServiceApi: process.env.REACT_APP_SIGNALR_CLIENT_ID
   },
   cacheLocation: 'localStorage',
 };
@@ -20,8 +21,8 @@ class AdalContext {
     return this.authContext;
   }
   
-  GetToken() {
-    return adalGetToken(this.authContext, endpoint);
+  GetToken(tokenEndpoint) {
+    return adalGetToken(this.authContext, tokenEndpoint);
   }
   LogOut() {
     this.authContext.logOut();
@@ -32,7 +33,10 @@ export default adalContext;
 
 export const authContext = new AuthenticationContext(adalConfig);
  
-export const adalApiFetch = (fetch, url, options) =>
-  adalFetch(authContext, adalConfig.endpoints.api, fetch, url, options);
+export const adalVehicleServicesFetch = (fetch, url, options) =>
+  adalFetch(authContext, adalConfig.endpoints.vehicleServiceApi, fetch, url, options);
  
-export const withAdalLoginApi = withAdalLogin(authContext, adalConfig.endpoints.api);
+export const adalSignalRServiceFetch = (fetch, url, options) =>
+  adalFetch(authContext, adalConfig.endpoints.signalRServiceApi, fetch, url, options);
+
+export const withAdalLoginApi = withAdalLogin(authContext, adalConfig.endpoints.vehicleServiceApi);
