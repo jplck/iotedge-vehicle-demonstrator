@@ -12,25 +12,25 @@ namespace VehicleServices
     public static class NegotiateSignalRFunction
     {
         [FunctionName("negotiate")]
-        public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req, [SignalRConnectionInfo(HubName = "telematicshub")] SignalRConnectionInfo info,
+        public static SignalRConnectionInfo GetSignalRInfo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req, [SignalRConnectionInfo(HubName = "telematicshub", UserId = "{headers.x-ms-client-principal-id}")] SignalRConnectionInfo info,
             ILogger log)
         {
-            
-            return info != null
-                ? (ActionResult)new OkObjectResult(info)
-                : new NotFoundObjectResult("Failed to load SignalR info.");
+            return info;
         }
 
         [FunctionName("addToGroup")]
         public static Task AddToGroup(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]HttpRequest req,
         ClaimsPrincipal claimsPrincipal,
-        [SignalR(HubName = "chat")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
+        [SignalR(HubName = "chat")] IAsyncCollector<SignalRGroupAction> signalRGroupActions,
+        ILogger log)
         {
-            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.Name);
+            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
             var userId = userIdClaim.Value;
-            var groupName = "myGroup";
+            var groupName = "vehicletelemetrydemousers";
+            log.LogDebug(userId);
+
             return signalRGroupActions.AddAsync(
                 new SignalRGroupAction
                 {

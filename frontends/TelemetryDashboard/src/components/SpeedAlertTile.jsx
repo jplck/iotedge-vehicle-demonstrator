@@ -4,6 +4,7 @@ import Axios from 'axios'
 import {Card, Button} from 'react-bootstrap'
 import Slider from '@material-ui/core/Slider'
 import { toast } from 'react-toastify';
+import { adalVehicleServicesFetch } from '../adalConfig';
 
 const SliderContainer = styled.div`
     margin-top: 50px;
@@ -23,13 +24,35 @@ class SpeedAlertTile extends React.Component
         this.saveSpeedAlert = this.saveSpeedAlert.bind(this);
     }
 
+    componentDidMount(){
+        this.setupNotifications();
+    }
+
+    setupNotifications() {
+        if (this.props.websocket !== null) {
+            this.props.websocket.on('speedAlerts', (speedAlertInfoMsg) => {
+                toast.warn("Your vehicle exeeded your speed alert limit.", {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            });
+        }
+    }
+
     async saveSpeedAlert()
     {
-        const response = await Axios.post('https://vehicle-services.azurewebsites.net/api/SetSpeedAlert', null)
-        toast.success("Your speed alert has been set successfully!", {
-            position: toast.POSITION.TOP_RIGHT
+        adalVehicleServicesFetch(Axios, "/SetSpeedAlert", {method: 'post'}).then(
+            (response) => {
+                console.log(response)
+                toast.success("Your speed alert has been set successfully!", {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            }
+        ).catch((error) => {
+            console.log(error)
+            toast.error(`Your speed alert setup failed! (${error})`, {
+                position: toast.POSITION.TOP_RIGHT
+            })
         })
-        console.log(response)
     }
 
     speedAlertValueChanged(event, value) {
