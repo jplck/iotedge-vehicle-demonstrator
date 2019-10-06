@@ -7,7 +7,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { runWithAdal } from 'react-adal';
 import adalContext, { authContext, adalConfig } from './adalConfig';
 import hash from 'object-hash'
-import { HubConnectionBuilder } from '@aspnet/signalr';
 
 const DO_NOT_LOGIN = false;
 

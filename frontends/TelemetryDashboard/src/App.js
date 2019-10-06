@@ -4,13 +4,15 @@ import {createGlobalStyle} from 'styled-components'
 import {Row, Col, Container} from 'react-bootstrap'
 import LiveTripTile from './components/LiveTripTile'
 import SpeedAlertTile from './components/SpeedAlertTile'
-import { ToastContainer, toast } from 'react-toastify';
+import VehicleSelectorTile from './components/VehicleSelectorTile'
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const GlobalStyle = createGlobalStyle`
   html, body {
     background-color: #ffffff;
     height: 100%;
+    margin-top: 20px;
   }
 `;
 
@@ -25,8 +27,11 @@ class App extends React.Component
           MeasuredSpeed: 0,
           SpeedLimit: 80,
         },
-        websocket: null
+        websocket: null,
+        selectedVehicle: null
       }
+
+      this.vehicleSelected = this.vehicleSelected.bind(this);
   }
 
   componentDidMount() {
@@ -43,30 +48,43 @@ class App extends React.Component
   }
 
   showMap() {
-    if (this.state.websocket != null) {
-      return <LiveTripTile hubConnection={this.state.websocket}/>
+    if (this.state.websocket !== null) {
+      return <LiveTripTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
     }
     return <div>loading...</div>
   }
 
+  vehicleSelected(pairing) {
+    this.setState({
+      selectedVehicle: pairing
+    })
+  }
+
   render() {
-    return (
-      <React.Fragment>
-        <ToastContainer />
-        <GlobalStyle />
-        
-        <Container>
-          <Row>
-            <Col className="col-9">
-              {this.showMap()}
-            </Col>
-            <Col className="col-3">
-              <SpeedAlertTile websocket={this.state.websocket}/>
-            </Col>
-          </Row>
-        </Container>
-      </React.Fragment>
-    )
+    if (this.state.websocket !== null) {
+      return (
+          <React.Fragment>
+            <ToastContainer />
+            <GlobalStyle />
+            <Container>
+              <Row>
+                <Col className="col-4">
+                  <VehicleSelectorTile onSelect={this.vehicleSelected} websocket={this.state.websocket}/>
+                </Col>
+                <Col className="col-5">
+                  {this.showMap()}
+                </Col>
+                <Col className="col-3">
+                  <SpeedAlertTile websocket={this.state.websocket}/>
+                </Col>
+              </Row>
+            </Container>
+          </React.Fragment>
+        )
+      }
+      return (
+        <div>Loading...</div>
+      )
   }
 }
 

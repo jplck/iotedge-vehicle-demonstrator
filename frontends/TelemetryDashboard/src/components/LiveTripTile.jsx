@@ -22,15 +22,19 @@ class LiveTripTile extends React.Component
         super(props);
         this.state = {
             currentLoc: {
-                Latitude: 52.10,
-                Longitude: 12.10
+                latitude: 52.10,
+                longitude: 12.10
             },
             odometry: {
-                SpeedLimit: 80,
-                MeasuredSpeed: 0
+                speedLimit: 80,
+                measuredSpeed: 0
             },
             zoom: 16
         }
+    }
+
+    isVehicleSelected() {
+        return this.props.selectedVehicle !== null && this.props.selectedVehicle !== undefined
     }
 
     componentDidMount()
@@ -40,21 +44,29 @@ class LiveTripTile extends React.Component
             return;
         }
         connection.on('vehicleLocation', (location) => {
-            console.log(location.Latitude);
+            var loc = JSON.parse(location)
+            if (!this.isVehicleSelected() || loc.deviceId !== this.props.selectedVehicle.deviceId) {
+                return
+            }
             this.setState({
-                currentLoc: JSON.parse(location)
+                currentLoc: loc
             })
         });
 
         connection.on('odometry', (odometry) => {
+            var odo = JSON.parse(odometry)
+            if (!this.isVehicleSelected() || odo.deviceId !== this.props.selectedVehicle.deviceId) {
+                return
+            }
             this.setState({
-                odometry: JSON.parse(odometry)
+                odometry: odo
             })
         });
     }
     
     render() {
-        const position = [this.state.currentLoc.Latitude, this.state.currentLoc.Longitude];
+        const position = [this.state.currentLoc.latitude, this.state.currentLoc.longitude];
+        var vehicleAvailable = this.props.selectedVehicle !== undefined && this.props.selectedVehicle !== null
         return (
             <MapContainer>
                 <Map center={position} zoom={this.state.zoom}>
@@ -69,9 +81,10 @@ class LiveTripTile extends React.Component
                     </Marker>
                 </Map>
                 <MapContainerFooter>
-                    <div>Current speed: <b>{this.state.odometry.MeasuredSpeed} km/h</b></div>
-                    <div>Latitude: <b>{this.state.currentLoc.Latitude}</b></div>
-                    <div>Longitude: <b>{this.state.currentLoc.Longitude}</b></div>
+                    <div>Selected vehicle: {vehicleAvailable ? this.props.selectedVehicle.name : "-"}</div>
+                    <div>Current speed: <b>{this.state.odometry.measuredSpeed} km/h</b></div>
+                    <div>Latitude: <b>{this.state.currentLoc.latitude}</b></div>
+                    <div>Longitude: <b>{this.state.currentLoc.longitude}</b></div>
                 </MapContainerFooter>
             </MapContainer>
         )

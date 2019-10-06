@@ -24,6 +24,10 @@ class SpeedAlertTile extends React.Component
         this.saveSpeedAlert = this.saveSpeedAlert.bind(this);
     }
 
+    componentDidMount(){
+        this.setupNotifications();
+    }
+
     setupNotifications() {
         if (this.props.websocket !== null) {
             this.props.websocket.on('speedAlerts', (speedAlertInfoMsg) => {
@@ -36,7 +40,7 @@ class SpeedAlertTile extends React.Component
 
     async saveSpeedAlert()
     {
-        adalVehicleServicesFetch(Axios, process.env.REACT_APP_SERVICES_URL + "/SetSpeedAlert", {method: 'post'}).then(
+        adalVehicleServicesFetch(Axios, "/SetSpeedAlert", {method: 'post'}).then(
             (response) => {
                 console.log(response)
                 toast.success("Your speed alert has been set successfully!", {
@@ -59,7 +63,6 @@ class SpeedAlertTile extends React.Component
 
     render()
     {
-        this.setupNotifications();
         return (
             <Card>
                 <Card.Body>

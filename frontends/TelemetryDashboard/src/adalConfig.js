@@ -1,6 +1,6 @@
 import { AuthenticationContext, adalFetch, withAdalLogin, adalGetToken } from 'react-adal';
 
-const endpoint = "https://graph.microsoft.com";
+//const endpoint = "https://graph.microsoft.com";
 
 export const adalConfig = {
   tenant: process.env.REACT_APP_TENANT_ID,
@@ -34,9 +34,9 @@ export default adalContext;
 export const authContext = new AuthenticationContext(adalConfig);
  
 export const adalVehicleServicesFetch = (fetch, url, options) =>
-  adalFetch(authContext, adalConfig.endpoints.vehicleServiceApi, fetch, url, options);
+  adalFetch(authContext, adalConfig.endpoints.vehicleServiceApi, fetch, process.env.REACT_APP_SERVICES_URL + url, options);
  
 export const adalSignalRServiceFetch = (fetch, url, options) =>
-  adalFetch(authContext, adalConfig.endpoints.signalRServiceApi, fetch, url, options);
+  adalFetch(authContext, adalConfig.endpoints.signalRServiceApi, fetch, process.env.REACT_APP_HUB_URL + url, options);
 
 export const withAdalLoginApi = withAdalLogin(authContext, adalConfig.endpoints.vehicleServiceApi);
