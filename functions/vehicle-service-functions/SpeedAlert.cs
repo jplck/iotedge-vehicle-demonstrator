@@ -6,16 +6,28 @@ using Newtonsoft.Json;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
-using System.Threading;
 using System.Net.Http;
-using System.Net;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
 
 namespace VehicleServices
 {
+    struct SpeedAlertInfo
+    {
+        [JsonProperty("speedLimit")]
+        public int SpeedLimit { get; set; }
+        [JsonProperty("measuredSpeed")]
+        public int MeasuredSpeed { get; set; }
+        [JsonProperty("deviceId")]
+        public string DeviceId { get; set; }
+
+        public SpeedAlertInfo(int speedLimit, int measuredSpeed, string deviceId)
+        {
+            SpeedLimit = speedLimit;
+            MeasuredSpeed = measuredSpeed;
+            DeviceId = deviceId;
+        }
+    }
+
     public static class SpeedAlert
     {
         [FunctionName("SpeedAlert")]
@@ -31,10 +43,9 @@ namespace VehicleServices
             {
             
                 int speed = doc.GetPropertyValue<int>("speed");
+                string deviceId = doc.GetPropertyValue<string>("deviceId");
 
-                var speedAlertInfo = new SpeedAlertInfo();
-                speedAlertInfo.SpeedLimit = 80;
-                speedAlertInfo.MeasuredSpeed = speed;
+                var speedAlertInfo = new SpeedAlertInfo(80, speed, deviceId);
 
                 if (speed > 80)
                 {
@@ -58,9 +69,20 @@ namespace VehicleServices
         }
 
         [FunctionName("SetSpeedAlert")]
-        public static IActionResult SetSpeedAlert([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+        public static async Task<HttpResponseMessage> SetSpeedAlert([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestMessage req, ILogger log, ClaimsPrincipal claimsPrincipal)
         {
-            return (ActionResult)new OkObjectResult(200);
+            if (claimsPrincipal.Identity.IsAuthenticated)
+            {
+                var claims = claimsPrincipal.Claims;
+                foreach (Claim claim in claims)
+                {
+                    var type = claim.Type;
+                    var value = claim.Value;
+                }
+                return req.CreateResponse(200);
+            }
+          
+            return await Task.FromResult(req.CreateResponse(401));
         }
     }
 }
