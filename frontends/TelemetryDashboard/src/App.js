@@ -23,10 +23,6 @@ class App extends React.Component
       super(props);
 
       this.state = {
-        odometry: {
-          MeasuredSpeed: 0,
-          SpeedLimit: 80,
-        },
         websocket: null,
         selectedVehicle: null
       }
@@ -35,7 +31,6 @@ class App extends React.Component
   }
 
   componentDidMount() {
-    console.log(this.props.authToken)
     var hubConnectionRef = new HubConnectionBuilder()
       .withUrl(process.env.REACT_APP_HUB_URL, { accessTokenFactory: () => this.props.signalRToken })
       .build();
@@ -45,13 +40,6 @@ class App extends React.Component
         websocket: hubConnectionRef
       })
     )
-  }
-
-  showMap() {
-    if (this.state.websocket !== null) {
-      return <LiveTripTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
-    }
-    return <div>loading...</div>
   }
 
   vehicleSelected(pairing) {
@@ -72,7 +60,7 @@ class App extends React.Component
                   <VehicleSelectorTile onSelect={this.vehicleSelected} websocket={this.state.websocket}/>
                 </Col>
                 <Col className="col-5">
-                  {this.showMap()}
+                  <LiveTripTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
                 </Col>
                 <Col className="col-3">
                   <SpeedAlertTile websocket={this.state.websocket}/>

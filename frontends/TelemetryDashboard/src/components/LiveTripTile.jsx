@@ -37,6 +37,10 @@ class LiveTripTile extends React.Component
         return this.props.selectedVehicle !== null && this.props.selectedVehicle !== undefined
     }
 
+    validateDeviceContext(deviceId) {
+        return this.isVehicleSelected() && deviceId === this.props.selectedVehicle.deviceId
+    }
+
     componentDidMount()
     {
         const connection = this.props.hubConnection;
@@ -45,7 +49,7 @@ class LiveTripTile extends React.Component
         }
         connection.on('vehicleLocation', (location) => {
             var loc = JSON.parse(location)
-            if (!this.isVehicleSelected() || loc.deviceId !== this.props.selectedVehicle.deviceId) {
+            if (!this.validateDeviceContext(loc.deviceId)) {
                 return
             }
             this.setState({
@@ -55,7 +59,7 @@ class LiveTripTile extends React.Component
 
         connection.on('odometry', (odometry) => {
             var odo = JSON.parse(odometry)
-            if (!this.isVehicleSelected() || odo.deviceId !== this.props.selectedVehicle.deviceId) {
+            if (!this.validateDeviceContext(odo.deviceId)) {
                 return
             }
             this.setState({
