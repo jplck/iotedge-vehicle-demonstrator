@@ -53,7 +53,7 @@ namespace VehicleDemonstrator.Module.Location
         /**
          * Destination point given distance and bearing from start point.
           */
-        static Coordinate CalculateCoordinates(Coordinate coords, double bearing, double distance, string tripGuid)
+        static Coordinate CalculateCoordinates(Coordinate coords, double bearing, double distance)
         {
             var angularDistRad = distance / _Radius;
             var bearingRad = ToRad(bearing);
@@ -71,15 +71,15 @@ namespace VehicleDemonstrator.Module.Location
             double newLat = ToDeg(lat);
             double newLon = ToDeg(lonNormalized);
 
-            return new Coordinate(newLat, newLon, tripGuid);
+            return new Coordinate(newLat, newLon);
         }
 
-        public static Coordinate NewCoordinates(Coordinate start, Coordinate end, double percent, string tripGuid)
+        public static Coordinate NewCoordinates(Coordinate start, Coordinate end, double percent)
         {
             double totalDistance = CalculateDistance(start, end);
             double distance = percent * totalDistance;
             double bearing = CalculateBearing(start, end);
-            var newCoords = CalculateCoordinates(start, bearing, distance, tripGuid);
+            var newCoords = CalculateCoordinates(start, bearing, distance);
 
             return newCoords;
         }

@@ -33,7 +33,6 @@ namespace VehicleDemonstrator.Module.Location
             await client.SetMethodHandlerAsync("Stop", OnStopRequest, null);
             await client.SetMethodHandlerAsync("Reset", OnResetRequest, null);
             await client.SetInputMessageHandlerAsync(OdometerInputName, OdometerMessageReceivedAsync, null);
-
         }
 
         public async Task Run()

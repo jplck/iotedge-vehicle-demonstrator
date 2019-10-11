@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using VehicleDemonstrator.Shared.GPX;
@@ -35,6 +36,8 @@ namespace VehicleDemonstrator.Module.Location
         private GPX _gpx;
         public int UpdateInterval = 1000;
         private CancellationToken _cancellationToken;
+        private double _accTripDistance;
+        private long _tripTime;
 
         public DriveSimulation(GPX gpx, int updateInterval, ISimulationHost simulationHost, CancellationToken cancellationToken)
         {
@@ -46,13 +49,11 @@ namespace VehicleDemonstrator.Module.Location
 
         public async Task Run(SimulationRunType runType)
         {
-            string tripGuid = Guid.NewGuid().ToString();
-
             if (runType == SimulationRunType.Route && _gpx.Routes.Count > 0 && _gpx.Routes[0].RoutePoints.Count > 0)
             {
                 foreach (GPXRoute route in _gpx.Routes)
                 {
-                    await RunItems(route.RoutePoints, tripGuid);
+                    await RunItems(route.RoutePoints);
                 }
             } else if (runType == SimulationRunType.Track && _gpx.Tracks.Count > 0 && _gpx.Tracks[0].TrackSegments.Count > 0)
             {
@@ -60,14 +61,19 @@ namespace VehicleDemonstrator.Module.Location
                 {
                     foreach (GPXTrackSegment segment in track.TrackSegments)
                     {
-                        await RunItems(segment.TrackPoints, tripGuid);
+                        await RunItems(segment.TrackPoints);
                     }
                 }
             }
         }
 
-        public async Task RunItems(IEnumerable<GPXGenericItem> items, string tripGuid)
+        public async Task RunItems(IEnumerable<GPXGenericItem> items)
         {
+            _tripTime = Stopwatch.GetTimestamp();
+            _accTripDistance = 0;
+
+            string tripGuid = Guid.NewGuid().ToString();
+
             GPXGenericItem previousPoint = null;
             foreach (GPXGenericItem item in items)
             {
@@ -83,8 +89,8 @@ namespace VehicleDemonstrator.Module.Location
 
         private async Task Drive(GPXGenericItem startPoint, GPXGenericItem endPoint, string tripGuid)
         {
-            Coordinate start = new Coordinate(startPoint, tripGuid);
-            Coordinate end = new Coordinate(endPoint, tripGuid);
+            Coordinate start = new Coordinate(startPoint);
+            Coordinate end = new Coordinate(endPoint);
 
             double fullDistance = Util.CalculateDistance(start, end);
             double percentage = 0;
@@ -102,7 +108,7 @@ namespace VehicleDemonstrator.Module.Location
                  * 
                  * */
                 double distance = fullDistance * (percentage > 0 ? 1 - percentage : 1.0);
-
+                _accTripDistance += distance;
                 /*
                  * Calculate how much of percent the vehicle drives off of the overall distance
                  * */
@@ -115,15 +121,20 @@ namespace VehicleDemonstrator.Module.Location
 
                 Console.WriteLine($"Percentage driven: {100*Math.Round(percentage, 2)}%");
 
+                var timeSinceStart = Stopwatch.GetTimestamp() - _tripTime;
+
                 if (percentage == 1)
                 {
-                    _simulationHost.SendSimulatedTelemetry(new Coordinate(endPoint, tripGuid));
+                    var coords = new Coordinate(endPoint);
+                    var trip = new Trip(tripGuid, coords, _accTripDistance, timeSinceStart);
+                    _simulationHost.SendSimulatedTelemetry(trip);
                     await Task.Delay(UpdateInterval);
                 }
                 else
                 {
-                    Coordinate newCoord = Util.NewCoordinates(start, end, percentage, tripGuid);
-                    _simulationHost.SendSimulatedTelemetry(newCoord);
+                    Coordinate newCoord = Util.NewCoordinates(start, end, percentage);
+                    var trip = new Trip(tripGuid, newCoord, _accTripDistance, timeSinceStart);
+                    _simulationHost.SendSimulatedTelemetry(trip);
                     await Task.Delay(UpdateInterval);
                 }
 

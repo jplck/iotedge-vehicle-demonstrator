@@ -6,41 +6,36 @@ namespace VehicleDemonstrator.Shared.Telemetry.Location
     public class Coordinate : TelemetrySegment
     {
         [JsonProperty("latitude")]
-        double _Lat;
+        double _lat;
         [JsonProperty("longitude")]
-        double _Lon;
-        [JsonProperty("tripGuid")]
-        string _tripGuid;
+        double _lon;
 
-        public Coordinate(double lat, double lon, string tripGuid) : base(TelemetryType.Location)
+        public Coordinate(double lat, double lon) : base(TelemetryType.Coordinates)
         {
-            _Lat = lat;
-            _Lon = lon;
-            _tripGuid = tripGuid;
+            _lat = lat;
+            _lon = lon;
         }
 
-        public Coordinate(GPXGenericItem item, string tripGuid) : base(TelemetryType.Location)
+        public Coordinate(GPXGenericItem item) : base(TelemetryType.Coordinates)
         {
-            _Lat = item.Lat;
-            _Lon = item.Lon;
-            _tripGuid = tripGuid;
+            _lat = item.Lat;
+            _lon = item.Lon;
         }
 
-        public Coordinate() : base(TelemetryType.Location)
+        public Coordinate() : base(TelemetryType.Coordinates)
         {
-            _Lat = 0;
-            _Lon = 0;
-            _tripGuid = "";
+            _lat = 0;
+            _lon = 0;
         }
 
         public double GetLatitude()
         {
-            return _Lat;
+            return _lat;
         }
 
         public double GetLongitude()
         {
-            return _Lon;
+            return _lon;
         }
     }
 }

@@ -5,24 +5,31 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace VehicleServices
 {
 
-    struct Location
+    struct TripData
     {
         [JsonProperty("latitude")]
         public double Latitude { get; }
         [JsonProperty("longitude")]
         public double Longitude { get; }
+        [JsonProperty("tripDistance")]
+        public double TripDistance { get; }
+        [JsonProperty("tripTime")]
+        public long TripTime { get; }
         [JsonProperty("deviceId")]
         public string DeviceId { get; set; }
 
-        public Location(double latitude, double longitude, string deviceId)
+        public TripData(double latitude, double longitude, string deviceId, double tripDistance, long tripTime)
         {
             Latitude = latitude;
             Longitude = longitude;
             DeviceId = deviceId;
+            TripDistance = tripDistance;
+            TripTime = tripTime;
         }
     }
 
@@ -42,10 +49,13 @@ namespace VehicleServices
                 foreach (Document doc in input)
                 {
                     string deviceId = doc.GetPropertyValue<string>("deviceId");
-                    double lat = doc.GetPropertyValue<double>("latitude");
-                    double lon = doc.GetPropertyValue<double>("longitude");
+                    var coords = doc.GetPropertyValue<JObject>("coordinates");
+                    double lat = coords.Value<double>("latitude");
+                    double lon = coords.Value<double>("longitude"); ;
+                    double tripDistance = coords.Value<double>("tripDistance"); ;
+                    long tripTime = coords.Value<long>("tripTime"); ;
 
-                    Location loc = new Location(lat, lon, deviceId);
+                    TripData loc = new TripData(lat, lon, deviceId, tripDistance, tripTime);
 
                     await signalRMessages.AddAsync(new SignalRMessage()
                     {

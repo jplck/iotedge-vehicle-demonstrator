@@ -21,9 +21,11 @@ class LiveTripTile extends React.Component
     constructor(props) {
         super(props);
         this.state = {
-            currentLoc: {
+            trip: {
                 latitude: 52.10,
-                longitude: 12.10
+                longitude: 12.10,
+                tripDistance: 0,
+                tripTime: 0
             },
             odometry: {
                 speedLimit: 80,
@@ -53,7 +55,7 @@ class LiveTripTile extends React.Component
                 return
             }
             this.setState({
-                currentLoc: loc
+                trip: loc
             })
         });
 
@@ -69,7 +71,7 @@ class LiveTripTile extends React.Component
     }
     
     render() {
-        const position = [this.state.currentLoc.latitude, this.state.currentLoc.longitude];
+        const position = [this.state.trip.latitude, this.state.trip.longitude];
         var vehicleAvailable = this.props.selectedVehicle !== undefined && this.props.selectedVehicle !== null
         return (
             <MapContainer>
@@ -87,8 +89,10 @@ class LiveTripTile extends React.Component
                 <MapContainerFooter>
                     <div>Selected vehicle: {vehicleAvailable ? this.props.selectedVehicle.name : "-"}</div>
                     <div>Current speed: <b>{this.state.odometry.measuredSpeed} km/h</b></div>
-                    <div>Latitude: <b>{this.state.currentLoc.latitude}</b></div>
-                    <div>Longitude: <b>{this.state.currentLoc.longitude}</b></div>
+                    <div>Trip distance: <b>{this.state.trip.tripDistance}m</b></div>
+                    <div>Trip time: <b>{this.state.trip.tripTime}s</b></div>
+                    <div>Latitude: <b>{this.state.trip.latitude}</b></div>
+                    <div>Longitude: <b>{this.state.trip.longitude}</b></div>
                 </MapContainerFooter>
             </MapContainer>
         )

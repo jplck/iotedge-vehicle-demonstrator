@@ -55,9 +55,7 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
         {
             try
             {
-
-
-                var moduleClient = userContext as ModuleClient;
+                ModuleClient moduleClient = userContext as ModuleClient;
                 if (moduleClient == null)
                 {
                     throw new InvalidOperationException("UserContext doesn't contain " + "expected values");
@@ -73,9 +71,9 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
 
                     switch (telemetry.GetTelemetryType())
                     {
-                        case TelemetryType.Location:
-                            telemetry = TelemetrySegmentFactory<Coordinate>.FromJsonString(messageString);
-                            Console.WriteLine($"Received coordinates.");
+                        case TelemetryType.Trip:
+                            telemetry = TelemetrySegmentFactory<Trip>.FromJsonString(messageString);
+                            Console.WriteLine($"Received trip data.");
                             break;
                         default:
                             telemetry = TelemetrySegmentFactory<Odometry>.FromJsonString(messageString); ;

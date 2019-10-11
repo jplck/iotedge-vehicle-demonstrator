@@ -7,8 +7,9 @@ namespace VehicleDemonstrator.Shared.Telemetry
     public enum TelemetryType
     {
         Odometry,
-        Location,
-        Container
+        Coordinates,
+        Container,
+        Trip
     }
 
     public class TelemetrySegment
