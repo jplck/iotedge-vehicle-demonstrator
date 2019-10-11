@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs;
@@ -9,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace VehicleServices
 {
+
+    struct Location
+    {
+        [JsonProperty("latitude")]
+        public double Latitude { get; }
+        [JsonProperty("longitude")]
+        public double Longitude { get; }
+        [JsonProperty("deviceId")]
+        public string DeviceId { get; set; }
+
+        public Location(double latitude, double longitude, string deviceId)
+        {
+            Latitude = latitude;
+            Longitude = longitude;
+            DeviceId = deviceId;
+        }
+    }
+
     public static class VehicleLocation
     {
         [FunctionName("VehicleLocation")]
@@ -28,7 +45,7 @@ namespace VehicleServices
                     double lat = doc.GetPropertyValue<double>("latitude");
                     double lon = doc.GetPropertyValue<double>("longitude");
 
-                    Location loc = new Location(lat, lon);
+                    Location loc = new Location(lat, lon, deviceId);
 
                     await signalRMessages.AddAsync(new SignalRMessage()
                     {
