@@ -38,7 +38,7 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
             _deviceId = Environment.GetEnvironmentVariable("IOTEDGE_DEVICEID");
             if (_deviceId == null)
             {
-                _deviceId = Guid.NewGuid().ToString();
+                _deviceId = "c8a895b9-a2c6-483a-b103-ca485055442a";//Guid.NewGuid().ToString();
             }
 
             AmqpTransportSettings amqpSetting = new AmqpTransportSettings(TransportType.Amqp_Tcp_Only);

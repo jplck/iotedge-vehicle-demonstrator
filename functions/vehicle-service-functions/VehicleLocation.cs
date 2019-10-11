@@ -52,8 +52,8 @@ namespace VehicleServices
                     var coords = doc.GetPropertyValue<JObject>("coordinates");
                     double lat = coords.Value<double>("latitude");
                     double lon = coords.Value<double>("longitude"); ;
-                    double tripDistance = coords.Value<double>("tripDistance"); ;
-                    long tripTime = coords.Value<long>("tripTime"); ;
+                    double tripDistance = doc.GetPropertyValue<double>("tripDistance"); ;
+                    long tripTime = doc.GetPropertyValue<long>("tripTime"); ;
 
                     TripData loc = new TripData(lat, lon, deviceId, tripDistance, tripTime);
 
