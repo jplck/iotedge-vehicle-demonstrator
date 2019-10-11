@@ -24,9 +24,10 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      dotnet publish -c Release -o out edge/LocationModule/LocationModule.csproj
-      dotnet publish -c Release -o out edge/OdometerModule/OdometerModule.csproj
-      dotnet publish -c Release -o out edge/TelemetryDispatcherModule/TelemetryDispatcherModule.csproj
+      for folder in edge/*Module; do
+          echo "$(basename "$folder")"
+          dotnet publish -c Release -o out $folder/$(basename "$folder").csproj
+      done
 
 - task: AzureIoTEdge@2
   inputs:
