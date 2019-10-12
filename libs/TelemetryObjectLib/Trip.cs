@@ -13,11 +13,11 @@ namespace VehicleDemonstrator.Shared.Telemetry
         [JsonProperty("tripDistance")]
         private double _tripDistance;
         [JsonProperty("tripTime")]
-        private long _tripTime;
+        private double _tripTime;
         [JsonProperty("tripGuid")]
         string _tripGuid;
 
-        public Trip(string tripGuid, Coordinate coords, double tripDistance, long tripTime) : base(TelemetryType.Trip)
+        public Trip(string tripGuid, Coordinate coords, double tripDistance, double tripTime) : base(TelemetryType.Trip)
         {
             _coords = coords;
             _tripDistance = tripDistance;
@@ -35,7 +35,7 @@ namespace VehicleDemonstrator.Shared.Telemetry
             return _coords;
         }
 
-        public long GetTripTime()
+        public double GetTripTime()
         {
             return _tripTime;
         }

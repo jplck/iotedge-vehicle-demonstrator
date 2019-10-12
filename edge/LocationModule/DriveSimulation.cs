@@ -37,7 +37,7 @@ namespace VehicleDemonstrator.Module.Location
         public int UpdateInterval = 1000;
         private CancellationToken _cancellationToken;
         private double _accTripDistance;
-        private long _tripTime;
+        private Stopwatch _tripStopwatch;
 
         public DriveSimulation(GPX gpx, int updateInterval, ISimulationHost simulationHost, CancellationToken cancellationToken)
         {
@@ -69,10 +69,12 @@ namespace VehicleDemonstrator.Module.Location
 
         public async Task RunItems(IEnumerable<GPXGenericItem> items)
         {
-            _tripTime = Stopwatch.GetTimestamp();
+            _tripStopwatch = new Stopwatch();
             _accTripDistance = 0;
 
             string tripGuid = Guid.NewGuid().ToString();
+
+            _tripStopwatch.Start();
 
             GPXGenericItem previousPoint = null;
             foreach (GPXGenericItem item in items)
@@ -121,7 +123,7 @@ namespace VehicleDemonstrator.Module.Location
 
                 Console.WriteLine($"Percentage driven: {100*Math.Round(percentage, 2)}%");
 
-                var timeSinceStart = Stopwatch.GetTimestamp() - _tripTime;
+                var timeSinceStart = _tripStopwatch.Elapsed.TotalSeconds;
 
                 if (percentage == 1)
                 {

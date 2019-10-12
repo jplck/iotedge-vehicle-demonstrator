@@ -17,6 +17,7 @@ namespace VehicleDemonstrator.Module.Location
 
         /*
          * Distance -> Spherical Law of Cosines
+         * returns distance in meters
          */
         public static double CalculateDistance(Coordinate coords1, Coordinate coords2)
         {

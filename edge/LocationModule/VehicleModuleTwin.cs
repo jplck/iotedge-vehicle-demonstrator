@@ -10,7 +10,7 @@ namespace VehicleDemonstrator.Module.Location
 
     class VehicleModuleTwin : ModuleTwin
     {
-        private string _routeFileDefault = "routes/gpx2.gpx";
+        private string _routeFileDefault = "routes/bswob.gpx";
         private int _updateIntervalDefault = 1000;
         private IModuleTwin _delegate;
 
