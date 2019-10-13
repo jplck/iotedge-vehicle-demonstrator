@@ -44,7 +44,6 @@ class LiveTripTile extends React.Component
         return this.isVehicleSelected() && deviceId === this.props.selectedVehicle.deviceId
     }
 
-    //Needs overhaul
     componentDidMount()
     {
         const connection = this.props.hubConnection;
@@ -54,22 +53,19 @@ class LiveTripTile extends React.Component
         connection.on('vehicleLocation', (location) => {
             var loc = JSON.parse(location)
             
-            var filteredDevices = []
             if (this.state.showAllDevices) {
+
                 var filteredDevices = this.state.devices.filter((device) => {
-                    if (loc.deviceId !== device.deviceId) {
-                        return device
-                    }
+                    return loc.deviceId !== device.deviceId
                 })
-                filteredDevices = [...filteredDevices, loc]
+
                 this.setState({
-                    devices: filteredDevices
+                    devices:  [...filteredDevices, loc]
                 })
             } else if (this.isVehicleSelected() && this.validateDeviceContext(loc.deviceId))
             {
-                filteredDevices = [loc]
                 this.setState({
-                    devices: filteredDevices
+                    devices: [loc]
                 })
             }
         });
@@ -83,8 +79,7 @@ class LiveTripTile extends React.Component
 
     render() {
         const position = [this.state.trip.latitude, this.state.trip.longitude];
-        var vehicleAvailable = this.props.selectedVehicle !== undefined && this.props.selectedVehicle !== null
-
+        
         var markers = this.state.devices.map((device) => {
             return (
                 <Marker key={device.deviceId} position={[device.latitude, device.longitude]}>

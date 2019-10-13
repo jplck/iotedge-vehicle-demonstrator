@@ -57,7 +57,7 @@ class App extends React.Component
             <GlobalStyle />
             <Container fluid>
               <Row>
-                <Col className="col-4">
+                <Col className="col-5">
                   <Container>
                     <Row>
                       <Col className="col-6">
@@ -74,7 +74,7 @@ class App extends React.Component
                     </Row>
                   </Container>
                 </Col>
-                <Col className="col-8">
+                <Col className="col-7">
                   <LiveTripTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
                 </Col>
               </Row>
