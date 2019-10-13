@@ -4,6 +4,7 @@ import {createGlobalStyle} from 'styled-components'
 import {Row, Col, Container} from 'react-bootstrap'
 import LiveTripTile from './components/LiveTripTile'
 import SpeedAlertTile from './components/SpeedAlertTile'
+import DeviceTelemetryTile from './components/DeviceTelemetryTile'
 import VehicleSelectorTile from './components/VehicleSelectorTile'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,16 +55,27 @@ class App extends React.Component
           <React.Fragment>
             <ToastContainer />
             <GlobalStyle />
-            <Container>
+            <Container fluid>
               <Row>
                 <Col className="col-4">
-                  <VehicleSelectorTile onSelect={this.vehicleSelected} websocket={this.state.websocket}/>
+                  <Container>
+                    <Row>
+                      <Col className="col-6">
+                        <VehicleSelectorTile onSelect={this.vehicleSelected} websocket={this.state.websocket}/>
+                      </Col>
+                      <Col className="col-6">
+                        <DeviceTelemetryTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="col-6">
+                          <SpeedAlertTile websocket={this.state.websocket}/>
+                      </Col>
+                    </Row>
+                  </Container>
                 </Col>
-                <Col className="col-5">
+                <Col className="col-8">
                   <LiveTripTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
-                </Col>
-                <Col className="col-3">
-                  <SpeedAlertTile websocket={this.state.websocket}/>
                 </Col>
               </Row>
             </Container>

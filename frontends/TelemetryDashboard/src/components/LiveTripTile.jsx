@@ -1,6 +1,9 @@
 import React from 'react'
 import {Map, Marker, TileLayer, Popup} from 'react-leaflet'
 import styled from 'styled-components'
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const MapContainer = styled.div`
     .leaflet-container {
@@ -17,7 +20,6 @@ const MapContainerFooter = styled.div`
 
 class LiveTripTile extends React.Component 
 {
-    
     constructor(props) {
         super(props);
         this.state = {
@@ -27,12 +29,11 @@ class LiveTripTile extends React.Component
                 tripDistance: 0,
                 tripTime: 0
             },
-            odometry: {
-                speedLimit: 80,
-                measuredSpeed: 0
-            },
-            zoom: 16
+            zoom: 16,
+            showAllDevices: false,
+            devices: []
         }
+        this.toggleShowAllDevices = this.toggleShowAllDevices.bind(this);
     }
 
     isVehicleSelected() {
@@ -43,6 +44,7 @@ class LiveTripTile extends React.Component
         return this.isVehicleSelected() && deviceId === this.props.selectedVehicle.deviceId
     }
 
+    //Needs overhaul
     componentDidMount()
     {
         const connection = this.props.hubConnection;
@@ -51,28 +53,46 @@ class LiveTripTile extends React.Component
         }
         connection.on('vehicleLocation', (location) => {
             var loc = JSON.parse(location)
-            if (!this.validateDeviceContext(loc.deviceId)) {
-                return
+            
+            var filteredDevices = []
+            if (this.state.showAllDevices) {
+                var filteredDevices = this.state.devices.filter((device) => {
+                    if (loc.deviceId !== device.deviceId) {
+                        return device
+                    }
+                })
+                filteredDevices = [...filteredDevices, loc]
+                this.setState({
+                    devices: filteredDevices
+                })
+            } else if (this.isVehicleSelected() && this.validateDeviceContext(loc.deviceId))
+            {
+                filteredDevices = [loc]
+                this.setState({
+                    devices: filteredDevices
+                })
             }
-            this.setState({
-                trip: loc
-            })
-        });
-
-        connection.on('odometry', (odometry) => {
-            var odo = JSON.parse(odometry)
-            if (!this.validateDeviceContext(odo.deviceId)) {
-                return
-            }
-            this.setState({
-                odometry: odo
-            })
         });
     }
     
+    toggleShowAllDevices() {
+        this.setState({
+            showAllDevices: !this.state.showAllDevices
+        })
+    }
+
     render() {
         const position = [this.state.trip.latitude, this.state.trip.longitude];
         var vehicleAvailable = this.props.selectedVehicle !== undefined && this.props.selectedVehicle !== null
+
+        var markers = this.state.devices.map((device) => {
+            return (
+                <Marker key={device.deviceId} position={[device.latitude, device.longitude]}>
+                    <Popup>{device.deviceId}</Popup>
+                </Marker>
+            )
+        })
+
         return (
             <MapContainer>
                 <Map center={position} zoom={this.state.zoom}>
@@ -80,19 +100,22 @@ class LiveTripTile extends React.Component
                         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <Marker position={position}>
-                        <Popup>
-                            Popup for any custom information.
-                        </Popup>
-                    </Marker>
+                    {markers}
                 </Map>
                 <MapContainerFooter>
-                    <div>Selected vehicle: {vehicleAvailable ? this.props.selectedVehicle.name : "-"}</div>
-                    <div>Current speed: <b>{this.state.odometry.measuredSpeed} km/h</b></div>
-                    <div>Trip distance: <b>{this.state.trip.tripDistance}m</b></div>
-                    <div>Trip time: <b>{this.state.trip.tripTime}s</b></div>
-                    <div>Latitude: <b>{this.state.trip.latitude}</b></div>
-                    <div>Longitude: <b>{this.state.trip.longitude}</b></div>
+                    <FormGroup row>
+                    <FormControlLabel
+                        control={
+                        <Checkbox
+                            value="showAllDevices"
+                            color="primary"
+                            onChange={this.toggleShowAllDevices}
+                            checked={this.state.showAllDevices}
+                        />
+                        }
+                        label="Show all devices"
+                    />
+                    </FormGroup>
                 </MapContainerFooter>
             </MapContainer>
         )

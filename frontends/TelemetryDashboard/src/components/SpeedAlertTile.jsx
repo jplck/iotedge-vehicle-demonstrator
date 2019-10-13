@@ -16,7 +16,7 @@ class SpeedAlertTile extends React.Component
     {
         super(props)
         this.state = {
-            currentSpeedAlertLimit: 80,
+            currentSpeedAlertLimit: 130,
             showNotification: false
         }
 
