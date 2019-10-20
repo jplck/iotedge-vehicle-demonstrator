@@ -16,6 +16,8 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
         static string InputName = "telemetryInput";
         static string OutputName = "output1";
 
+        private static ModuleClient _client;
+
         static void Main(string[] args)
         {
             Init().Wait();
@@ -44,11 +46,11 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
             AmqpTransportSettings amqpSetting = new AmqpTransportSettings(TransportType.Amqp_Tcp_Only);
             ITransportSettings[] settings = { amqpSetting };
 
-            ModuleClient ioTHubModuleClient = await ModuleClient.CreateFromEnvironmentAsync(settings);
-            await ioTHubModuleClient.OpenAsync();
+            _client = await ModuleClient.CreateFromEnvironmentAsync(settings);
+            await _client.OpenAsync();
             Console.WriteLine("Dispatcher active.");
 
-            await ioTHubModuleClient.SetInputMessageHandlerAsync(InputName, PipeMessage, ioTHubModuleClient);
+            await _client.SetInputMessageHandlerAsync(InputName, PipeMessage, _client);
         }
 
         static async Task<MessageResponse> PipeMessage(Message message, object userContext)
@@ -66,26 +68,23 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
 
                 if (!string.IsNullOrEmpty(messageString))
                 {
-
                     var telemetry = TelemetrySegmentFactory<TelemetrySegment>.FromJsonString(messageString);
 
                     switch (telemetry.GetTelemetryType())
                     {
                         case TelemetryType.Trip:
-                            telemetry = TelemetrySegmentFactory<Trip>.FromJsonString(messageString);
+                            var trip = TelemetrySegmentFactory<Trip>.FromJsonString(messageString);
+                            var tripContainer = new TelemetryContainer<Trip>(_deviceId, trip);
                             Console.WriteLine($"Received trip data.");
+                            await SendTelemetry(tripContainer);
                             break;
                         default:
-                            telemetry = TelemetrySegmentFactory<Odometry>.FromJsonString(messageString); ;
+                            var odometry = TelemetrySegmentFactory<Odometry>.FromJsonString(messageString);
+                            var odometryContainer = new TelemetryContainer<Odometry>(_deviceId, odometry);
                             Console.WriteLine($"Received odometry.");
+                            await SendTelemetry(odometryContainer);
                             break;
                     }
-
-                    TelemetryContainer container = new TelemetryContainer(_deviceId, telemetry);
-                    Console.WriteLine(container.ToJson());
-                    var pipeMessage = new Message(container.ToJsonByteArray());
-                    await moduleClient.SendEventAsync(OutputName, pipeMessage);
-                    Console.WriteLine("Received message sent");
                 }
 
             } catch (Exception e)
@@ -93,6 +92,14 @@ namespace VehicleDemonstrator.Module.TelemetryDispatcher
                 Console.WriteLine(e.Message);
             }
             return MessageResponse.Completed;
+        }
+
+        private static async Task SendTelemetry<T>(TelemetryContainer<T> container)
+        {
+            Console.WriteLine(container.ToJson());
+            var pipeMessage = new Message(container.ToJsonByteArray());
+            await _client.SendEventAsync(OutputName, pipeMessage);
+            Console.WriteLine("Received message sent");
         }
     }
 }

@@ -9,7 +9,7 @@ namespace VehicleDemonstrator.Module.Odometer
 
     class Program
     {
-        static int UpdateInterval = 1000;
+        static int UpdateInterval = 5000;
         static string OdometerOutputName = "odometerOutput";
 
         static void Main(string[] args)
