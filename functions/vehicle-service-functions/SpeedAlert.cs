@@ -8,6 +8,10 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using System.Net.Http;
 using System.Security.Claims;
+using Microsoft.Azure.EventHubs;
+using System.Text;
+using VehicleDemonstrator.Shared.Telemetry;
+using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
 namespace VehicleServices
 {
@@ -31,19 +35,17 @@ namespace VehicleServices
     public static class SpeedAlert
     {
         [FunctionName("SpeedAlert")]
-        public static async Task Run([CosmosDBTrigger(
-            databaseName: "vehicleshadow",
-            collectionName: "odometry",
-            ConnectionStringSetting = "ShadowConnection",
-            CreateLeaseCollectionIfNotExists = true,
-            LeaseCollectionPrefix = "speedAlert")]IReadOnlyList<Document> input,
+        public static async Task Run(
+            [EventHubTrigger("iotedge-odometry-event-hub", Connection = "OdometerHubConnectionListener")] EventData[] events,
             [SignalR(HubName = "telematicshub")] IAsyncCollector<SignalRMessage> signalRMessages, ILogger log)
         {
-            foreach (Document doc in input)
+            foreach (EventData eventData in events)
             {
-            
-                int speed = doc.GetPropertyValue<int>("speed");
-                string deviceId = doc.GetPropertyValue<string>("deviceId");
+                string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
+                TelemetryContainer<Odometry> container = TelemetrySegmentFactory<TelemetryContainer<Odometry>>.FromJsonString(messageBody);
+
+                int speed = container.GetPayload().GetSpeed();
+                string deviceId = container.GetDeviceId();
 
                 var speedAlertInfo = new SpeedAlertInfo(80, speed, deviceId);
 

@@ -2,17 +2,29 @@
 
 namespace VehicleDemonstrator.Shared.Telemetry
 {
-    public class TelemetryContainer: TelemetrySegment
+    public class TelemetryContainer<T>: TelemetrySegment
     {
         [JsonProperty("deviceId")]
         private string _deviceId;
         [JsonProperty("payload")]
-        private TelemetrySegment _segment;
+        private T _segment;
 
-        public TelemetryContainer(string deviceId, TelemetrySegment segment) : base(TelemetryType.Container)
+        public TelemetryContainer(string deviceId, T segment) : base(TelemetryType.Container)
         {
             _deviceId = deviceId;
             _segment = segment;
+        }
+
+        
+
+        public string GetDeviceId()
+        {
+            return _deviceId;
+        }
+
+        public T GetPayload()
+        {
+            return _segment;
         }
     }
 }

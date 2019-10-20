@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Microsoft.Azure.EventHubs;
+using VehicleDemonstrator.Shared.Telemetry;
+using System.Text;
 
 namespace VehicleServices
 {
@@ -19,53 +22,47 @@ namespace VehicleServices
         [JsonProperty("tripDistance")]
         public double TripDistance { get; }
         [JsonProperty("tripTime")]
-        public long TripTime { get; }
+        public double TripTime { get; }
         [JsonProperty("deviceId")]
         public string DeviceId { get; set; }
 
-        public TripData(double latitude, double longitude, string deviceId, double tripDistance, long tripTime)
+        public TripData(TelemetryContainer<Trip> tripContainer)
         {
-            Latitude = latitude;
-            Longitude = longitude;
-            DeviceId = deviceId;
-            TripDistance = tripDistance;
-            TripTime = tripTime;
+            var payload = tripContainer.GetPayload();
+            var coord = payload.GetCoordinates();
+            Latitude = coord.GetLatitude();
+            Longitude = coord.GetLongitude();
+            DeviceId = tripContainer.GetDeviceId();
+            TripDistance = payload.GetTripDistance();
+            TripTime = payload.GetTripTime();
         }
     }
 
     public static class VehicleLocation
     {
         [FunctionName("VehicleLocation")]
-        public static async Task Run([SignalR(HubName = "telematicshub")] IAsyncCollector<SignalRMessage> signalRMessages, [CosmosDBTrigger(
-            databaseName: "vehicleshadow",
-            collectionName: "locations",
-            ConnectionStringSetting = "ShadowConnection",
-            CreateLeaseCollectionIfNotExists = true,
-            LeaseCollectionPrefix = "location")]IReadOnlyList<Document> input, ILogger log)
+        public static async Task Run(
+            [SignalR(HubName = "telematicshub")] IAsyncCollector<SignalRMessage> signalRMessages,
+            [EventHubTrigger("iotedge-trip-event-hub", Connection = "TripHubConnectionReader")] EventData[] tripEventData,
+            ILogger log)
         {
-            if (input != null && input.Count > 0)
+
+            foreach (EventData eventData in tripEventData)
             {
+                string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
+                TelemetryContainer<Trip> container = TelemetrySegmentFactory<TelemetryContainer<Trip>>.FromJsonString(messageBody);
 
-                foreach (Document doc in input)
+                TripData tripData = new TripData(container);
+
+                await signalRMessages.AddAsync(new SignalRMessage()
                 {
-                    string deviceId = doc.GetPropertyValue<string>("deviceId");
-                    var coords = doc.GetPropertyValue<JObject>("coordinates");
-                    double lat = coords.Value<double>("latitude");
-                    double lon = coords.Value<double>("longitude"); ;
-                    double tripDistance = doc.GetPropertyValue<double>("tripDistance"); ;
-                    long tripTime = doc.GetPropertyValue<long>("tripTime"); ;
+                    Target = "vehicleLocation",
+                    Arguments = new object[] { JsonConvert.SerializeObject(tripData) }
+                });
 
-                    TripData loc = new TripData(lat, lon, deviceId, tripDistance, tripTime);
-
-                    await signalRMessages.AddAsync(new SignalRMessage()
-                    {
-                        Target = "vehicleLocation",
-                        Arguments = new object[] { JsonConvert.SerializeObject(loc) }
-                    });
-
-                    log.LogInformation($"Read and send location. Latitude: {lat}, Longitude: {lon}");
-                }
+                log.LogInformation($"Read and send location. Latitude: {tripData.Latitude}, Longitude: {tripData.Longitude}");
             }
+
         }
     }
 }

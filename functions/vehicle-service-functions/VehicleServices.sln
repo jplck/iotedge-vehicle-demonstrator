@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VehicleServices", "VehicleServices.csproj", "{A4F6FDF1-4FEF-4B24-A80D-79CA6F400141}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryObjectLib", "..\..\libs\TelemetryObjectLib\TelemetryObjectLib.csproj", "{B28CDEF5-E1D7-4ED7-8236-3987D863A208}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A4F6FDF1-4FEF-4B24-A80D-79CA6F400141}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4F6FDF1-4FEF-4B24-A80D-79CA6F400141}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4F6FDF1-4FEF-4B24-A80D-79CA6F400141}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B28CDEF5-E1D7-4ED7-8236-3987D863A208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B28CDEF5-E1D7-4ED7-8236-3987D863A208}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B28CDEF5-E1D7-4ED7-8236-3987D863A208}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B28CDEF5-E1D7-4ED7-8236-3987D863A208}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
