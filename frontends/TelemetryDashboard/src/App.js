@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const GlobalStyle = createGlobalStyle`
   html, body {
-    background-color: #ffb900;
+    background-color: #ffffff;
     height: 100%;
     margin-top: 20px;
   }
