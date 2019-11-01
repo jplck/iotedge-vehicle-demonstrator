@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -11,10 +14,16 @@ using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
 namespace VehicleServices
 {
-    public static class ServiceDataDispatcher
+    public class ServiceDataDispatcher
     {
+        private TelemetryClient telemetryClient;
+        public ServiceDataDispatcher(TelemetryConfiguration telemetryConfig)
+        {
+            this.telemetryClient = new TelemetryClient(telemetryConfig);
+        }
+
         [FunctionName("ServiceDataDispatcher")]
-        public static async Task Run(
+        public async Task Run(
             [EventHubTrigger("iotedge-telemetry-demo-hub", Connection = "IotEdgeEventHubConnection")] EventData[] events,
             [EventHub("iotedge-trip-event-hub", Connection = "TripHubConnectionWriter")] ICollector<EventData> tripDataEvents,
             [EventHub("iotedge-odometry-event-hub", Connection = "OdometerHubConnectionWriter")] ICollector<EventData> odometerDataEvents,
@@ -54,14 +63,16 @@ namespace VehicleServices
                 throw exceptions.Single();
         }
 
-        private static void DispatchTripTelemetry(byte[] msgBytes, ICollector<EventData> tripDataEvents, ILogger log)
+        private void DispatchTripTelemetry(byte[] msgBytes, ICollector<EventData> tripDataEvents, ILogger log)
         {
             log.LogInformation("Trip data has been dispatched.");
+            this.telemetryClient.TrackEvent(new EventTelemetry("Trip data has been dispatched."));
             tripDataEvents.Add(new EventData(msgBytes));
         }
-        private static void DispatchOdometerTelemetry(byte[] msgBytes, ICollector<EventData> odometerDataEvents, ILogger log)
+        private void DispatchOdometerTelemetry(byte[] msgBytes, ICollector<EventData> odometerDataEvents, ILogger log)
         {
             log.LogInformation("Odometer data has been dispatched.");
+            this.telemetryClient.TrackEvent(new EventTelemetry("Odometer data has been dispatched."));
             odometerDataEvents.Add(new EventData(msgBytes));
         }
     }
