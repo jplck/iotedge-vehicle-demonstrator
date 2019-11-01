@@ -27,6 +27,12 @@ namespace VehicleDemonstrator.Module.Location
             double distance = Math.Acos(Math.Sin(lat1) * Math.Sin(lat2) +
                     Math.Cos(lat1) * Math.Cos(lat2) * Math.Cos(dLon)) * _Radius;
 
+            if (Double.IsNaN(distance))
+            {
+                Console.WriteLine("NAN");
+                return 0;
+            }
+
             return distance;
         }
 
