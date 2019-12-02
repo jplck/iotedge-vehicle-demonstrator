@@ -75,7 +75,7 @@ class App extends React.Component
                   </Container>
                 </Col>
                 <Col className="col-7">
-                  <LiveTripTile selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
+                  <LiveTripTile subscriptionKey={process.env.REACT_APP_MAPS_KEY} selectedVehicle={this.state.selectedVehicle} hubConnection={this.state.websocket}/>
                 </Col>
               </Row>
             </Container>

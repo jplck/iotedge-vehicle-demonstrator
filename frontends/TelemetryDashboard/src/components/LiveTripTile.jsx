@@ -1,9 +1,9 @@
 import React from 'react'
-import {Map, Marker, TileLayer, Popup} from 'react-leaflet'
 import styled from 'styled-components'
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import * as atlas from 'azure-maps-control'
 
 const MapContainer = styled.div`
     .leaflet-container {
@@ -20,6 +20,9 @@ const MapContainerFooter = styled.div`
 
 class LiveTripTile extends React.Component 
 {
+    static MAP_ID = "azmap"
+    _dataSource = null
+
     constructor(props) {
         super(props);
         this.state = {
@@ -30,10 +33,75 @@ class LiveTripTile extends React.Component
                 tripTime: 0
             },
             zoom: 16,
+            zoomStepSize: 1,
+            pitchDegrees: 0,
             showAllDevices: false,
-            devices: []
+            devices: [],
+            controls: []
         }
         this.toggleShowAllDevices = this.toggleShowAllDevices.bind(this);
+    }
+
+    initializeAzureMap()
+    {
+        var map = new atlas.Map(LiveTripTile.MAP_ID, {
+            view: 'Auto',
+            authOptions: {
+                authType: 'subscriptionKey',
+                subscriptionKey: this.props.subscriptionKey
+            }
+        })
+
+        map.events.add("ready", () => {
+            this._dataSource = new atlas.source.DataSource();
+            map.sources.add(this._dataSource);
+
+            var layer = new atlas.layer.SymbolLayer(this._dataSource);
+
+            map.layers.add(layer);
+
+            this.setupListeners(map, this._dataSource);
+
+            this.addMapControls(map)
+
+            map.setTraffic({
+                incidents: false,
+                flow: 'relative'
+            })
+        })
+    }
+
+    addMapControls(map)
+    {
+        map.controls.remove(this.state.controls);
+        var controls = []
+
+        controls.push(new atlas.control.ZoomControl({
+            zoomDelta: parseFloat(this.state.zoomStepSize),
+            style: 'light'
+        }));
+
+        controls.push(new atlas.control.PitchControl({
+            pitchDegreesDelta: parseFloat(5),
+            style: 'light'
+        }));
+
+        controls.push(new atlas.control.StyleControl({
+            style: 'light'
+        }));
+
+        controls.push(new atlas.control.CompassControl({
+            rotationDegreesDelta: parseFloat(5),
+            style: 'light'
+        }));
+
+        this.setState({
+            controls: controls
+        })
+
+        map.controls.add(controls, {
+            position: 'bottom-right'
+        });
     }
 
     isVehicleSelected() {
@@ -44,7 +112,12 @@ class LiveTripTile extends React.Component
         return this.isVehicleSelected() && deviceId === this.props.selectedVehicle.deviceId
     }
 
-    componentDidMount()
+    shouldComponentUpdate(nextProps, nextState) 
+    {
+        return true
+    }
+
+    setupListeners(map, dataSource)
     {
         const connection = this.props.hubConnection;
         if (connection === null) {
@@ -52,51 +125,49 @@ class LiveTripTile extends React.Component
         }
         connection.on('vehicleLocation', (location) => {
             var loc = JSON.parse(location)
-            
-            if (this.state.showAllDevices) {
 
-                var filteredDevices = this.state.devices.filter((device) => {
-                    return loc.deviceId !== device.deviceId
+            if (this.validateDeviceContext(loc.deviceId) || this.state.showAllDevices) {
+
+                var point = new atlas.Shape(new atlas.data.Point([loc.longitude, loc.latitude]))
+
+                var filteredDevice = this.state.devices.filter((device) => {
+                    return loc.deviceId === device.deviceId
                 })
 
-                this.setState({
-                    devices:  [...filteredDevices, loc]
-                })
-            } else if (this.isVehicleSelected() && this.validateDeviceContext(loc.deviceId))
-            {
-                this.setState({
-                    devices: [loc]
-                })
+                if (filteredDevice.length === 1) {
+                    var point = dataSource.getShapeById(filteredDevice[0].pointRef)
+                    point.setCoordinates(new atlas.data.Position(loc.longitude, loc.latitude))
+                } else {
+                    dataSource.add(point)
+                    loc = {...loc, pointRef: point.data.id}
+
+                    this.setState({
+                        devices: [...this.state.devices.filter((device) => {
+                            return loc.deviceId !== device.deviceId
+                        }), loc]
+                    })
+                }
             }
         });
     }
+
+    componentDidMount()
+    {
+        this.initializeAzureMap()
+    }
     
     toggleShowAllDevices() {
+        this._dataSource.clear();
         this.setState({
-            showAllDevices: !this.state.showAllDevices
+            showAllDevices: !this.state.showAllDevices,
+            devices: []
         })
     }
 
     render() {
-        const position = [this.state.trip.latitude, this.state.trip.longitude];
-        
-        var markers = this.state.devices.map((device) => {
-            return (
-                <Marker key={device.deviceId} position={[device.latitude, device.longitude]}>
-                    <Popup>{device.deviceId}</Popup>
-                </Marker>
-            )
-        })
-
         return (
             <MapContainer>
-                <Map center={position} zoom={this.state.zoom}>
-                    <TileLayer
-                        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    {markers}
-                </Map>
+                <div style={{height: '500px', width: '100%'}} id={LiveTripTile.MAP_ID}></div>
                 <MapContainerFooter>
                     <FormGroup row>
                     <FormControlLabel
