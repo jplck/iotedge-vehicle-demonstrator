@@ -1,28 +1,28 @@
-﻿using Newtonsoft.Json;
-using VehicleDemonstrator.Shared.GPX;
+﻿using AzureMapsToolkit.Common;
+using Newtonsoft.Json;
 
 namespace VehicleDemonstrator.Shared.Telemetry.Location
 {
-    public class Coordinate : TelemetrySegment
+    public class Point : TelemetrySegment
     {
         [JsonProperty("latitude")]
         double _lat;
         [JsonProperty("longitude")]
         double _lon;
 
-        public Coordinate(double lat, double lon) : base(TelemetryType.Coordinates)
+        public Point(double lat, double lon) : base(TelemetryType.Coordinates)
         {
             _lat = lat;
             _lon = lon;
         }
 
-        public Coordinate(GPXGenericItem item) : base(TelemetryType.Coordinates)
+        public Point(Coordinate coord) : base(TelemetryType.Coordinates)
         {
-            _lat = item.Lat;
-            _lon = item.Lon;
+            _lat = coord.Latitude;
+            _lon = coord.Longitude;
         }
 
-        public Coordinate() : base(TelemetryType.Coordinates)
+        public Point() : base(TelemetryType.Coordinates)
         {
             _lat = 0;
             _lon = 0;

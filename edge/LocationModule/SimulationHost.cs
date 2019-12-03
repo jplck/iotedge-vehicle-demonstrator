@@ -5,9 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using VehicleDemonstrator.Shared.Connectivity;
 using VehicleDemonstrator.Shared.Util;
-using VehicleDemonstrator.Shared.GPX;
 using VehicleDemonstrator.Shared.Telemetry;
 using VehicleDemonstrator.Shared.Telemetry.Odometry;
+using System.Net.Http;
+using System.Globalization;
+using AzureMapsToolkit.Common;
+using AzureMapsToolkit.Search;
 
 namespace VehicleDemonstrator.Module.Location
 {
@@ -19,9 +22,13 @@ namespace VehicleDemonstrator.Module.Location
         private bool _simStatus = false;
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
+        private HttpClient _httpClient = new HttpClient();
+        private static string SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("MAPS_KEY");
 
         public async Task Setup()
         {
+            _httpClient.BaseAddress = new Uri("https://atlas.microsoft.com");
+
             var hub = HubConnection.Instance;
             await hub.Connect();
 
@@ -40,8 +47,8 @@ namespace VehicleDemonstrator.Module.Location
             try
             {
                 _cts = new CancellationTokenSource();
-                GPX gpx = GPXReader.Read(_twin.RouteFile);
-                _sim = new DriveSimulation(gpx, _twin.UpdateInterval, this, _cts.Token);
+                var route = await GetRoute();
+                _sim = new DriveSimulation(route, _twin.UpdateInterval, this, _cts.Token);
                 _simStatus = true;
                 _twin.SimulationStatus = true;
                 await _twin.SendReportedProperties();
@@ -114,6 +121,36 @@ namespace VehicleDemonstrator.Module.Location
             _sim.InputTelemetry(odometry);
 
             return await Task.FromResult(MessageResponse.Completed);
+        }
+
+        private async Task<RouteDirectionsResult> GetRoute()
+        {
+            var am = new AzureMapsToolkit.AzureMapsServices(SUBSCRIPTION_KEY);
+      
+            SearchAddressRequest startLocRequest = new SearchAddressRequest();
+            startLocRequest.Query = "Gifhorn";
+
+            SearchAddressRequest endLocRequest = new SearchAddressRequest();
+            endLocRequest.Query = "Wolfsburg";
+            
+            var startLoc = await am.GetSearchAddress(startLocRequest);
+            var endLoc = await am.GetSearchAddress(endLocRequest);
+
+            var start = startLoc.Result.Results[0].Position;
+            var end = endLoc.Result.Results[0].Position;
+
+            var lat1 = start.Lat.ToString("0.00", new CultureInfo("en-us", false));
+            var lon1 = start.Lon.ToString("0.00", new CultureInfo("en-us", false));
+            var lat2 = end.Lat.ToString("0.00", new CultureInfo("en-us", false));
+            var lon2 = end.Lon.ToString("0.00", new CultureInfo("en-us", false));
+
+            RouteRequestDirections directions = new RouteRequestDirections();
+            directions.Query = $"{lat1},{lon1}:{lat2},{lon2}";
+
+            var route = await am.GetRouteDirections(directions);
+            var routeContent = route.Result.Routes[0];
+
+            return routeContent;
         }
     }
 }
