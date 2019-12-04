@@ -10,7 +10,6 @@ namespace VehicleDemonstrator.Module.Location
 
     class VehicleModuleTwin : ModuleTwin
     {
-        private string _routeFileDefault = "routes/bswob.gpx";
         private int _updateIntervalDefault = 1000;
         private IModuleTwin _delegate;
 
@@ -20,7 +19,6 @@ namespace VehicleDemonstrator.Module.Location
 
         public VehicleModuleTwin(IModuleTwin twinDelegate)
         {
-            RouteFile = _routeFileDefault;
             UpdateInterval = 1000;
             SimulationStatus = true;
             _delegate = twinDelegate;
@@ -28,7 +26,6 @@ namespace VehicleDemonstrator.Module.Location
 
         public override void UpdatedDesiredPropertiesReceived(TwinCollection desiredProperties)
         {
-            RouteFile = !desiredProperties.Contains("RouteFile") ? _routeFileDefault : desiredProperties["RouteFile"];
             UpdateInterval = !desiredProperties.Contains("UpdateInterval") ? _updateIntervalDefault : desiredProperties["UpdateInterval"];
 
             _delegate.DeviceTwinUpdateReceived(this);
@@ -38,7 +35,6 @@ namespace VehicleDemonstrator.Module.Location
         {
             TwinCollection reportedProperties = new TwinCollection
             {
-                ["RouteFile"] = RouteFile,
                 ["UpdateInterval"] = UpdateInterval,
                 ["SimulationStatus"] = SimulationStatus
             };

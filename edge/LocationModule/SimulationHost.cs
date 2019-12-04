@@ -23,7 +23,7 @@ namespace VehicleDemonstrator.Module.Location
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
         private HttpClient _httpClient = new HttpClient();
-        private static string SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("MAPS_KEY");
+        private static string SUBSCRIPTION_KEY = "";
 
         public async Task Setup()
         {

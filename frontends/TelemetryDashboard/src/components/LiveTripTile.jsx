@@ -87,7 +87,8 @@ class LiveTripTile extends React.Component
         }));
 
         controls.push(new atlas.control.StyleControl({
-            style: 'light'
+            style: 'light',
+            mapStyles: 'all'
         }));
 
         controls.push(new atlas.control.CompassControl({
