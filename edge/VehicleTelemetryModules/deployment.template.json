@@ -65,6 +65,11 @@
             "settings": {
               "image": "${MODULEDIR<../LocationModule>}",
               "createOptions": {}
+            },
+            "env": {
+              "AZURE_MAPS_KEY": {
+                "value": "$AZURE_MAPS_KEY"
+              }
             }
           },
           "OdometerModule": {
