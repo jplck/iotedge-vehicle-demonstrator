@@ -48,7 +48,7 @@ namespace VehicleDemonstrator.Module.Location
             try
             {
                 _cts = new CancellationTokenSource();
-                var route = await GetRoute();
+                var route = await GetRoute(_twin.LocStart, _twin.LocEnd);
                 _sim = new DriveSimulation(route, _twin.UpdateInterval, this, _cts.Token);
                 _simStatus = true;
                 _twin.SimulationStatus = true;
@@ -92,20 +92,9 @@ namespace VehicleDemonstrator.Module.Location
                     Helper.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
                 }
 
-                if (twin.LocEnd != _twin.LocEnd)
-                {
-                    _twin.LocEnd = twin.LocEnd;
-                    Helper.WriteLine($"Updated end location {twin.LocEnd}.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                }
-
-                if (twin.LocStart != _twin.LocStart)
-                {
-                    _twin.LocStart = twin.LocStart;
-                    Helper.WriteLine($"Updated start location {twin.LocStart}.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                }
-
                 if (twin.LocEnd != _twin.LocEnd || twin.LocStart != _twin.LocStart)
                 {
+                    Helper.WriteLine($"Updated location {twin.LocStart} -> {twin.LocEnd}.", ConsoleColor.White, ConsoleColor.DarkYellow);
                     await Stop();
                     _ = Run();
                 }
@@ -145,15 +134,15 @@ namespace VehicleDemonstrator.Module.Location
             return await Task.FromResult(MessageResponse.Completed);
         }
 
-        private async Task<RouteDirectionsResult> GetRoute()
+        private async Task<RouteDirectionsResult> GetRoute(string from, string to)
         {
             var am = new AzureMapsToolkit.AzureMapsServices(_subscriptionKey);
       
             SearchAddressRequest startLocRequest = new SearchAddressRequest();
-            startLocRequest.Query = _twin.LocStart;
+            startLocRequest.Query = from;
 
             SearchAddressRequest endLocRequest = new SearchAddressRequest();
-            endLocRequest.Query = _twin.LocEnd;
+            endLocRequest.Query = to;
             
             var startLoc = await am.GetSearchAddress(startLocRequest);
             var endLoc = await am.GetSearchAddress(endLocRequest);
