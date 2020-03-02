@@ -4,6 +4,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import * as atlas from 'azure-maps-control'
+import * as service from 'azure-maps-rest'
 
 const MapContainer = styled.div`
     .leaflet-container {
@@ -68,6 +69,7 @@ class LiveTripTile extends React.Component
                 incidents: false,
                 flow: 'relative'
             })
+
         })
     }
 
