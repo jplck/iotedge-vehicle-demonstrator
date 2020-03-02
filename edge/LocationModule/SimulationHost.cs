@@ -100,7 +100,7 @@ namespace VehicleDemonstrator.Module.Location
 
                 if (twin.LocStart != _twin.LocStart)
                 {
-                    _twin.LocEnd = twin.LocEnd;
+                    _twin.LocStart = twin.LocStart;
                     Helper.WriteLine($"Updated start location {twin.LocStart}.", ConsoleColor.White, ConsoleColor.DarkYellow);
                 }
 
