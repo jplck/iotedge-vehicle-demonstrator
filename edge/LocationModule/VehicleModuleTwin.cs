@@ -11,11 +11,17 @@ namespace VehicleDemonstrator.Module.Location
     class VehicleModuleTwin : ModuleTwin
     {
         private int _updateIntervalDefault = 1000;
+        private string _locStartDefault = "Wolfsburg";
+        private string _locEndDefault = "Berlin";
         private IModuleTwin _delegate;
 
         public string RouteFile { get; set; }
         public int UpdateInterval { get; set; }
         public bool SimulationStatus { get; set; }
+
+        public string LocStart { get; set; }
+
+        public string LocEnd { get; set; }
 
         public VehicleModuleTwin(IModuleTwin twinDelegate)
         {
@@ -27,7 +33,8 @@ namespace VehicleDemonstrator.Module.Location
         public override void UpdatedDesiredPropertiesReceived(TwinCollection desiredProperties)
         {
             UpdateInterval = !desiredProperties.Contains("UpdateInterval") ? _updateIntervalDefault : desiredProperties["UpdateInterval"];
-
+            LocStart = !desiredProperties.Contains("LocStart") ? _locStartDefault : desiredProperties["LocStart"];
+            LocEnd = !desiredProperties.Contains("LocEnd") ? _locEndDefault : desiredProperties["LocEnd"];
             _delegate.DeviceTwinUpdateReceived(this);
         }
 
@@ -36,7 +43,9 @@ namespace VehicleDemonstrator.Module.Location
             TwinCollection reportedProperties = new TwinCollection
             {
                 ["UpdateInterval"] = UpdateInterval,
-                ["SimulationStatus"] = SimulationStatus
+                ["SimulationStatus"] = SimulationStatus,
+                ["LocStart"] = LocStart,
+                ["LocEnd"] = LocEnd
             };
             return reportedProperties;
         }

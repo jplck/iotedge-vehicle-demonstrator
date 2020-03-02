@@ -23,7 +23,7 @@ namespace VehicleDemonstrator.Module.Location
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
         private HttpClient _httpClient = new HttpClient();
-        private static string SUBSCRIPTION_KEY = "";
+        private static string SUBSCRIPTION_KEY = "X0Ymi7GAgntPOF7YhEKY65oHJVrKQm7SvCzPH27BVJA";
 
         public async Task Setup()
         {
@@ -128,10 +128,10 @@ namespace VehicleDemonstrator.Module.Location
             var am = new AzureMapsToolkit.AzureMapsServices(SUBSCRIPTION_KEY);
       
             SearchAddressRequest startLocRequest = new SearchAddressRequest();
-            startLocRequest.Query = "Gifhorn";
+            startLocRequest.Query = _twin.LocStart;
 
             SearchAddressRequest endLocRequest = new SearchAddressRequest();
-            endLocRequest.Query = "Wolfsburg";
+            endLocRequest.Query = _twin.LocEnd;
             
             var startLoc = await am.GetSearchAddress(startLocRequest);
             var endLoc = await am.GetSearchAddress(endLocRequest);

@@ -14,18 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="routes\gpx1.gpx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="routes\gpx2.gpx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="routes\bswob.gpx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AzureMapsRestToolkit" Version="4.1.1" />
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.21.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
