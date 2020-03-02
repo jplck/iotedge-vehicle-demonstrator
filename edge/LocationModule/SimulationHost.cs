@@ -49,10 +49,13 @@ namespace VehicleDemonstrator.Module.Location
             {
                 _cts = new CancellationTokenSource();
                 var route = await GetRoute(_twin.LocStart, _twin.LocEnd);
+                Helper.WriteLine("Route calculated.", ConsoleColor.White, ConsoleColor.DarkYellow);
                 _sim = new DriveSimulation(route, _twin.UpdateInterval, this, _cts.Token);
                 _simStatus = true;
+                Helper.WriteLine("Simulation setup completed.", ConsoleColor.White, ConsoleColor.DarkYellow);
                 _twin.SimulationStatus = true;
                 await _twin.SendReportedProperties();
+                Helper.WriteLine("Twin reported properties sent.", ConsoleColor.White, ConsoleColor.DarkYellow);
                 await _sim.Run(SimulationRunType.Track);
             }
             catch (OperationCanceledException)
