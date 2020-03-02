@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AzureMapsRestToolkit" Version="4.1.1" />
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.21.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
@@ -38,7 +39,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libs\ConnectivtyUtilLib\ConnectivtyUtilLib.csproj" />
-    <ProjectReference Include="..\..\libs\GPXParserLib\GPXParserLib.csproj" />
     <ProjectReference Include="..\..\libs\TelemetryObjectLib\TelemetryObjectLib.csproj" />
   </ItemGroup>
   

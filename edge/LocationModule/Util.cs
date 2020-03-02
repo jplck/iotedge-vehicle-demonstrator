@@ -19,7 +19,7 @@ namespace VehicleDemonstrator.Module.Location
          * Distance -> Spherical Law of Cosines
          * returns distance in meters
          */
-        public static double CalculateDistance(Coordinate coords1, Coordinate coords2)
+        public static double CalculateDistance(Point coords1, Point coords2)
         {
             double dLon = ToRad(coords2.GetLongitude() - coords1.GetLongitude());
             double lat1 = ToRad(coords1.GetLatitude());
@@ -39,7 +39,7 @@ namespace VehicleDemonstrator.Module.Location
         /*
          * Rhumb lines -> Bearing
          */
-        private static double CalculateBearing(Coordinate coords1, Coordinate coords2)
+        private static double CalculateBearing(Point coords1, Point coords2)
         {
             double startLat = ToRad(coords1.GetLatitude());
             double startLon = ToRad(coords1.GetLongitude());
@@ -60,7 +60,7 @@ namespace VehicleDemonstrator.Module.Location
         /**
          * Destination point given distance and bearing from start point.
           */
-        static Coordinate CalculateCoordinates(Coordinate coords, double bearing, double distance)
+        static Point CalculateCoordinates(Point coords, double bearing, double distance)
         {
             var angularDistRad = distance / _Radius;
             var bearingRad = ToRad(bearing);
@@ -78,10 +78,10 @@ namespace VehicleDemonstrator.Module.Location
             double newLat = ToDeg(lat);
             double newLon = ToDeg(lonNormalized);
 
-            return new Coordinate(newLat, newLon);
+            return new Point(newLat, newLon);
         }
 
-        public static Coordinate NewCoordinates(Coordinate start, Coordinate end, double percent)
+        public static Point NewCoordinates(Point start, Point end, double percent)
         {
             double totalDistance = CalculateDistance(start, end);
             double distance = percent * totalDistance;

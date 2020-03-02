@@ -9,7 +9,7 @@ namespace VehicleDemonstrator.Shared.Telemetry
     public class Trip : TelemetrySegment
     {
         [JsonProperty("coordinates")]
-        private Coordinate _coords;
+        private Point _coords;
         [JsonProperty("tripDistance")]
         private double _tripDistance;
         [JsonProperty("tripTime")]
@@ -17,7 +17,7 @@ namespace VehicleDemonstrator.Shared.Telemetry
         [JsonProperty("tripGuid")]
         string _tripGuid;
 
-        public Trip(string tripGuid, Coordinate coords, double tripDistance, double tripTime) : base(TelemetryType.Trip)
+        public Trip(string tripGuid, Point coords, double tripDistance, double tripTime) : base(TelemetryType.Trip)
         {
             _coords = coords;
             _tripDistance = tripDistance;
@@ -30,7 +30,7 @@ namespace VehicleDemonstrator.Shared.Telemetry
             return _tripDistance;
         }
 
-        public Coordinate GetCoordinates()
+        public Point GetCoordinates()
         {
             return _coords;
         }
