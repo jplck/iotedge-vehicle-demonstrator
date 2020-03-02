@@ -23,10 +23,11 @@ namespace VehicleDemonstrator.Module.Location
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
         private HttpClient _httpClient = new HttpClient();
-        private static string SUBSCRIPTION_KEY = "X0Ymi7GAgntPOF7YhEKY65oHJVrKQm7SvCzPH27BVJA";
+        private string _subscriptionKey = "";
 
         public async Task Setup()
         {
+            _subscriptionKey = Environment.GetEnvironmentVariable("AZURE_MAPS_KEY");
             _httpClient.BaseAddress = new Uri("https://atlas.microsoft.com");
 
             var hub = HubConnection.Instance;
@@ -81,12 +82,33 @@ namespace VehicleDemonstrator.Module.Location
             }
         }
 
-        public void DeviceTwinUpdateReceived(VehicleModuleTwin twin)
+        public async void DeviceTwinUpdateReceived(VehicleModuleTwin twin)
         {
             if (_sim != null)
             {
-                _sim.UpdateInterval = twin.UpdateInterval;
-                Helper.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                if (twin.UpdateInterval != _sim.UpdateInterval)
+                {
+                    _sim.UpdateInterval = twin.UpdateInterval;
+                    Helper.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                }
+
+                if (twin.LocEnd != _twin.LocEnd)
+                {
+                    _twin.LocEnd = twin.LocEnd;
+                    Helper.WriteLine($"Updated end location {twin.LocEnd}.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                }
+
+                if (twin.LocStart != _twin.LocStart)
+                {
+                    _twin.LocEnd = twin.LocEnd;
+                    Helper.WriteLine($"Updated start location {twin.LocStart}.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                }
+
+                if (twin.LocEnd != _twin.LocEnd || twin.LocStart != _twin.LocStart)
+                {
+                    await Stop();
+                    _ = Run();
+                }
             }
 
         }
@@ -125,7 +147,7 @@ namespace VehicleDemonstrator.Module.Location
 
         private async Task<RouteDirectionsResult> GetRoute()
         {
-            var am = new AzureMapsToolkit.AzureMapsServices(SUBSCRIPTION_KEY);
+            var am = new AzureMapsToolkit.AzureMapsServices(_subscriptionKey);
       
             SearchAddressRequest startLocRequest = new SearchAddressRequest();
             startLocRequest.Query = _twin.LocStart;
