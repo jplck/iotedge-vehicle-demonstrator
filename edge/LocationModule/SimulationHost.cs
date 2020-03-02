@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Globalization;
 using AzureMapsToolkit.Common;
 using AzureMapsToolkit.Search;
+using Microsoft.Azure.Devices.Shared;
 
 namespace VehicleDemonstrator.Module.Location
 {
@@ -24,6 +25,8 @@ namespace VehicleDemonstrator.Module.Location
         private const string OutputName = "locationModuleOutput";
         private HttpClient _httpClient = new HttpClient();
         private string _subscriptionKey = "";
+        private string _locStart = "";
+        private string _locEnd = "";
 
         public async Task Setup()
         {
@@ -95,8 +98,10 @@ namespace VehicleDemonstrator.Module.Location
                     Helper.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
                 }
 
-                if (twin.LocEnd != _twin.LocEnd || twin.LocStart != _twin.LocStart)
+                if (twin.LocEnd != _locEnd || twin.LocStart != _locStart)
                 {
+                    _locEnd = twin.LocEnd;
+                    _locStart = twin.LocStart;
                     Helper.WriteLine($"Updated location {twin.LocStart} -> {twin.LocEnd}.", ConsoleColor.White, ConsoleColor.DarkYellow);
                     await Stop();
                     _ = Run();
