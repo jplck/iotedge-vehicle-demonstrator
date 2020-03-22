@@ -1,0 +1,15 @@
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\SimulationEnvironment.deps.json
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\SimulationEnvironment.dll
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\SimulationEnvironment.pdb
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\AzureMapsRestToolkit.dll
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\ConnectivtyUtilLib.dll
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\TelemetryObjectLib.dll
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\ConnectivtyUtilLib.pdb
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\TelemetryObjectLib.pdb
+D:\Development\C#\iotedge\libs\SimulationEnvironment\bin\Debug\netcoreapp3.0\AzureMapsRestToolkit.pdb
+D:\Development\C#\iotedge\libs\SimulationEnvironment\obj\Debug\netcoreapp3.0\SimulationEnvironment.csprojAssemblyReference.cache
+D:\Development\C#\iotedge\libs\SimulationEnvironment\obj\Debug\netcoreapp3.0\SimulationEnvironment.AssemblyInfoInputs.cache
+D:\Development\C#\iotedge\libs\SimulationEnvironment\obj\Debug\netcoreapp3.0\SimulationEnvironment.AssemblyInfo.cs
+D:\Development\C#\iotedge\libs\SimulationEnvironment\obj\Debug\netcoreapp3.0\SimulationEnvironment.csproj.CopyComplete
+D:\Development\C#\iotedge\libs\SimulationEnvironment\obj\Debug\netcoreapp3.0\SimulationEnvironment.dll
+D:\Development\C#\iotedge\libs\SimulationEnvironment\obj\Debug\netcoreapp3.0\SimulationEnvironment.pdb

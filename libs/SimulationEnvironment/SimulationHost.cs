@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using VehicleDemonstrator.Module.Location;
 using VehicleDemonstrator.Shared.Util;
 using VehicleDemonstrator.Shared.Connectivity;
 using Microsoft.Azure.Devices.Client;
 using VehicleDemonstrator.Shared.Telemetry;
+using Microsoft.Azure.Devices.Shared;
 
-namespace LocationModule
+namespace VehicleDemonstrator.Shared.SimulationEnvironment
 {
-    abstract class SimulationHost: IModuleTwin
+    public abstract class SimulationHost: ITwinUpdateReceiver
     {
-        private VehicleModuleTwin _twin;
+        private ModuleTwin _twin;
         private CancellationTokenSource _cts;
         private Simulation sim;
         public bool SimulationStatus = false;
         private ModuleClient client;
-
-        public SimulationHost()
-        {
-            _cts = new CancellationTokenSource();
-        }
 
         public async Task SetupConnectionAsync()
         {
@@ -31,7 +24,7 @@ namespace LocationModule
 
             client = hub.GetClient();
 
-            _twin = new VehicleModuleTwin(this);
+            _twin = new ModuleTwin(this);
             await _twin.Init();
 
             await client.SetMethodHandlerAsync("Stop", OnStopRequest, null);
@@ -40,13 +33,14 @@ namespace LocationModule
 
         public void ConnectSimulation(Simulation simulation)
         {
+            _cts = new CancellationTokenSource();
             sim = simulation;
             sim.SetCancellationToken(_cts.Token);
         }
 
         public async Task RunSimulationAsync() => await sim.RunAsync();
 
-        public VehicleModuleTwin GetTwin() => _twin;
+        public ModuleTwin GetTwin() => _twin;
 
         public Simulation GetSimulation() => sim;
 
@@ -98,6 +92,6 @@ namespace LocationModule
             await HubConnection.Instance.GetClient().SendEventAsync(outputName, message);
         }
 
-        public abstract Task DeviceTwinUpdateReceivedAsync(VehicleModuleTwin twin);
+        public abstract Task UpdatedDesiredPropertiesReceivedAsync(TwinCollection desiredProperties);
     }
 }

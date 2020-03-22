@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.21.0" />
+    <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.24.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.4" />
@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\MapsToolkit\AzureMapsRestToolkit\AzureMapsRestToolkit\AzureMapsRestToolkit.csproj" />
     <ProjectReference Include="..\..\libs\ConnectivtyUtilLib\ConnectivtyUtilLib.csproj" />
+    <ProjectReference Include="..\..\libs\SimulationEnvironment\SimulationEnvironment.csproj" />
     <ProjectReference Include="..\..\libs\TelemetryObjectLib\TelemetryObjectLib.csproj" />
   </ItemGroup>
   

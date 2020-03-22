@@ -3,13 +3,26 @@ using Microsoft.Azure.Devices.Shared;
 
 namespace VehicleDemonstrator.Shared.Connectivity
 {
-    public abstract class ModuleTwin
+
+    public interface ITwinUpdateReceiver
+    {
+        Task UpdatedDesiredPropertiesReceivedAsync(TwinCollection desiredProperties);
+    }
+
+    public class ModuleTwin
     {
         private HubConnection _hub;
 
-        public ModuleTwin()
+        private ITwinUpdateReceiver propertyReceiver;
+
+        private TwinCollection reportedProperties;
+
+        private bool reportedPropertiesOutOfSync = false;
+
+        public ModuleTwin(ITwinUpdateReceiver receiver = null)
         {
             _hub = HubConnection.Instance;
+            propertyReceiver = receiver;
         }
 
         public async Task Init()
@@ -26,20 +39,33 @@ namespace VehicleDemonstrator.Shared.Connectivity
 
         private async Task DesiredPropertiesCallback(TwinCollection desiredProperties, object userContext)
         {
-            UpdatedDesiredPropertiesReceived(desiredProperties);
+            if (propertyReceiver != null)
+            {
+                await propertyReceiver.UpdatedDesiredPropertiesReceivedAsync(desiredProperties);
+            }
 
             /*Update reported properties at the end to include changed made in the delegate 
               method UpdatedDesiredPropertiesReceived as well.
             */
+
             await SendReportedProperties();
+            
         }
 
         public async Task SendReportedProperties()
         {
-            await _hub.GetClient().UpdateReportedPropertiesAsync(ProvideReportedProperties());
+            if (!reportedPropertiesOutOfSync)
+            {
+                return;
+            }
+            await _hub.GetClient().UpdateReportedPropertiesAsync(reportedProperties);
+            reportedPropertiesOutOfSync = false;
         }
 
-        public abstract void UpdatedDesiredPropertiesReceived(TwinCollection desiredProperties);
-        public abstract TwinCollection ProvideReportedProperties();
+        public void AddReportedProperties(TwinCollection properties)
+        {
+            reportedPropertiesOutOfSync = true;
+            reportedProperties = properties;
+        }
     }
 }

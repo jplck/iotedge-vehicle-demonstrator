@@ -6,11 +6,13 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{34036844-64E7-43A5-9151-4AD90E180989}") = "VehicleTelemetryModules", "VehicleTelemetryModules.iotedgeproj", "{1420C7A4-FACB-40F6-A8A1-E27BBA08BA85}"
 	ProjectSection(ProjectDependencies) = postProject
 		{21E7CA21-B1AB-46E1-8712-5215C8F3CE4E} = {21E7CA21-B1AB-46E1-8712-5215C8F3CE4E}
+		{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426} = {06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocationModule", "..\LocationModule\LocationModule.csproj", "{1A623E3A-31D2-4ACA-B238-52D31264C95A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{21E7CA21-B1AB-46E1-8712-5215C8F3CE4E} = {21E7CA21-B1AB-46E1-8712-5215C8F3CE4E}
+		{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426} = {06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryDispatcherModule", "..\TelemetryDispatcherModule\TelemetryDispatcherModule.csproj", "{3E129B65-5424-4B10-BAA6-D5FD8503D401}"
@@ -22,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryObjectLib", "..\..\libs\TelemetryObjectLib\TelemetryObjectLib.csproj", "{982911BF-4605-4239-9C47-FB3B1563F36D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureMapsRestToolkit", "..\..\..\MapsToolkit\AzureMapsRestToolkit\AzureMapsRestToolkit\AzureMapsRestToolkit.csproj", "{21E7CA21-B1AB-46E1-8712-5215C8F3CE4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationEnvironment", "..\..\libs\SimulationEnvironment\SimulationEnvironment.csproj", "{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,10 @@ Global
 		{21E7CA21-B1AB-46E1-8712-5215C8F3CE4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21E7CA21-B1AB-46E1-8712-5215C8F3CE4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21E7CA21-B1AB-46E1-8712-5215C8F3CE4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06C2DCC6-D8F7-4C05-9D54-3D4BC2E73426}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

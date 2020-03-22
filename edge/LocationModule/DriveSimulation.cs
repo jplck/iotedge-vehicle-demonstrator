@@ -2,24 +2,29 @@
 using LocationModule;
 using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using VehicleDemonstrator.Shared.Telemetry;
 using VehicleDemonstrator.Shared.Telemetry.Location;
 using VehicleDemonstrator.Shared.Telemetry.Odometry;
+using VehicleDemonstrator.Shared.SimulationEnvironment;
 
 namespace VehicleDemonstrator.Module.Location
 {
     class DriveSimulation: Simulation
     {
         private int currentSpeed = 50;
+        private const int DefaultSpeedLimit = 50;
         private RouteDirectionsResult gpx;
         private double accTripDistance;
         private Stopwatch tripStopwatch;
+        private double lastMeasuredStopwatch = 0;
+        private double prevSpeedLimit = 0;
+        private Maps maps;
 
-        public DriveSimulation(RouteDirectionsResult gpx, int updateInterval, SimulationHost simulationHost): base(updateInterval, simulationHost)
+        public DriveSimulation(RouteDirectionsResult gpx, int updateInterval, DriveSimulationHost simulationHost): base(updateInterval, simulationHost)
         {
             this.gpx = gpx;
+            maps = simulationHost._maps;
         }
 
         public override async Task RunAsync()
@@ -90,6 +95,8 @@ namespace VehicleDemonstrator.Module.Location
                 Console.WriteLine($"Percentage driven: {100*Math.Round(percentage, 2)}%");
 
                 var timeSinceStart = tripStopwatch.Elapsed.TotalSeconds;
+                var elapsed = timeSinceStart - lastMeasuredStopwatch;
+                lastMeasuredStopwatch = timeSinceStart;
 
                 if (percentage == 1)
                 {
@@ -101,13 +108,23 @@ namespace VehicleDemonstrator.Module.Location
                 else
                 {
                     Point newCoord = Util.NewCoordinates(start, end, percentage);
-                    var trip = new Trip(tripGuid, newCoord, accTripDistance, timeSinceStart);
+                    var speedLimit = await FetchSpeedLimit(elapsed, newCoord.GetLatitude(), newCoord.GetLongitude());
+                    var trip = new Trip(tripGuid, newCoord, accTripDistance, timeSinceStart, speedLimit ?? prevSpeedLimit);
                     PushTelemetryToHost(trip);
                     await Task.Delay(UpdateInterval);
                 }
 
                 ListenToCancellationRequests();
             }
+        }
+
+        private async Task<double?> FetchSpeedLimit(double timeElapsed, double lat, double lon)
+        {
+            if (timeElapsed >= 10)
+            {
+                return await maps.GetSpeedLimit(lat, lon);
+            }
+            return null;
         }
 
         public override void InputExternalTelemetry(TelemetrySegment telemetry)

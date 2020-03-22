@@ -11,7 +11,6 @@ namespace LocationModule
     class Maps
     {
         private string mapsKey = "";
-        const double DefaultSpeedLimit = 50;
         const string CoordinateDigitFormat = "0.00";
         const string SpeedLimitSuffix = "KPH";
         private readonly AzureMapsToolkit.AzureMapsServices toolkit;
@@ -73,7 +72,7 @@ namespace LocationModule
             return coord.ToString(CoordinateDigitFormat, new CultureInfo("en-us", false));
         }
 
-        public async Task<double> GetSpeedLimit(double lat, double lon) 
+        public async Task<double?> GetSpeedLimit(double lat, double lon) 
         {
             var req = new SearchAddressReverseRequest
             {
@@ -96,14 +95,14 @@ namespace LocationModule
                             return double.Parse(value);
                         } catch (FormatException formatException)
                         {
-                            return DefaultSpeedLimit;
+                            return null;
                         }
                         
                     }
                 }
             }
 
-            return DefaultSpeedLimit;
+            return null;
         }
     }
 }

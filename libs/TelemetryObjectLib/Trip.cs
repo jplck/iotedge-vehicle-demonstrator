@@ -10,6 +10,8 @@ namespace VehicleDemonstrator.Shared.Telemetry
     {
         [JsonProperty("coordinates")]
         private Point _coords;
+        [JsonProperty("speedLimit")]
+        private double _speedLimit;
         [JsonProperty("tripDistance")]
         private double _tripDistance;
         [JsonProperty("tripTime")]
@@ -17,12 +19,13 @@ namespace VehicleDemonstrator.Shared.Telemetry
         [JsonProperty("tripGuid")]
         string _tripGuid;
 
-        public Trip(string tripGuid, Point coords, double tripDistance, double tripTime) : base(TelemetryType.Trip)
+        public Trip(string tripGuid, Point coords, double tripDistance, double tripTime, double speedLimit = 0) : base(TelemetryType.Trip)
         {
             _coords = coords;
             _tripDistance = tripDistance;
             _tripTime = tripTime;
             _tripGuid = tripGuid;
+            _speedLimit = speedLimit;
         }
 
         public double GetTripDistance()
@@ -38,6 +41,10 @@ namespace VehicleDemonstrator.Shared.Telemetry
         public double GetTripTime()
         {
             return _tripTime;
+        }
+        public double GetSpeedLimit()
+        {
+            return _speedLimit;
         }
     }
 }

@@ -1,18 +1,14 @@
 ﻿using Microsoft.Azure.Devices.Client;
 using System;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using VehicleDemonstrator.Shared.Connectivity;
 using VehicleDemonstrator.Shared.Util;
 using VehicleDemonstrator.Shared.Telemetry;
 using VehicleDemonstrator.Shared.Telemetry.Odometry;
 using System.Net.Http;
-using System.Globalization;
-using AzureMapsToolkit.Common;
-using AzureMapsToolkit.Search;
-using Microsoft.Azure.Devices.Shared;
 using LocationModule;
+using VehicleDemonstrator.Shared.SimulationEnvironment;
+using Microsoft.Azure.Devices.Shared;
 
 namespace VehicleDemonstrator.Module.Location
 {
@@ -21,9 +17,10 @@ namespace VehicleDemonstrator.Module.Location
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
         private HttpClient _httpClient = new HttpClient();
-        private Maps _maps;
-        private string _locStart = "";
-        private string _locEnd = "";
+        public Maps _maps;
+        private string _locStart = "Bremen";
+        private string _locEnd = "Hamburg";
+        private int _updateInterval = 1000;
 
         public async Task SetupAsync()
         {
@@ -39,44 +36,37 @@ namespace VehicleDemonstrator.Module.Location
 
         public override async Task RunAsync()
         {
-            try
+            if (_locStart != string.Empty && _locEnd != String.Empty)
             {
-                var route = await _maps.GetRoute(GetTwin().LocStart, GetTwin().LocEnd);
-                Helper.WriteLine("Route calculated.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                ConnectSimulation(new DriveSimulation(route, GetTwin().UpdateInterval, this));
-                SimulationStatus = true;
-                Helper.WriteLine("Simulation setup completed.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                GetTwin().SimulationStatus = true;
-                await GetTwin().SendReportedProperties();
-                Helper.WriteLine("Twin reported properties sent.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                await RunSimulationAsync();
-            }
-            catch (OperationCanceledException)
-            {
-                SimulationStatus = false;
-                GetTwin().SimulationStatus = false;
-                await GetTwin().SendReportedProperties();
+                try
+                {
+                    var route = await _maps.GetRoute(_locStart, _locEnd);
+                    Helper.WriteLine("Route calculated.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                    ConnectSimulation(new DriveSimulation(route, _updateInterval, this));
+                    SimulationStatus = true;
+                    Helper.WriteLine("Simulation setup completed.", ConsoleColor.White, ConsoleColor.DarkYellow);
 
-                Helper.WriteLine("Simulation run cancelled or stopped on request.", ConsoleColor.White, ConsoleColor.DarkRed);
+                    await SetTwinSimulationStatus(true);
+
+                    Helper.WriteLine("Twin reported properties sent.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                    await RunSimulationAsync();
+                }
+                catch (OperationCanceledException)
+                {
+                    SimulationStatus = false;
+                    await SetTwinSimulationStatus(false);
+                    Helper.WriteLine("Simulation run cancelled or stopped on request.", ConsoleColor.White, ConsoleColor.DarkRed);
+                }
             }
         }
 
-        public override async Task DeviceTwinUpdateReceivedAsync(VehicleModuleTwin twin)
+        private async Task SetTwinSimulationStatus(bool status)
         {
-            if (twin.UpdateInterval != GetSimulation().UpdateInterval)
+            GetTwin().AddReportedProperties(new TwinCollection()
             {
-                GetSimulation().UpdateInterval = twin.UpdateInterval;
-                Helper.WriteLine($"Updated UpdateInterval {twin.UpdateInterval} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
-            }
-
-            if (twin.LocEnd != _locEnd || twin.LocStart != _locStart)
-            {
-                _locEnd = twin.LocEnd;
-                _locStart = twin.LocStart;
-                Helper.WriteLine($"Updated location {twin.LocStart} -> {twin.LocEnd}.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                await Stop();
-                _ = RunAsync();
-            }
+                ["SimulationStatus"] = status
+            });
+            await GetTwin().SendReportedProperties();
         }
 
         private async Task<MessageResponse> OdometerMessageReceivedAsync(Message message, object userContext)
@@ -93,6 +83,31 @@ namespace VehicleDemonstrator.Module.Location
         public override async Task DispatchToOutputs(TelemetrySegment telemetry)
         {
             await SendIntoOutputAsync(telemetry, OutputName);
+        }
+
+        public override async Task UpdatedDesiredPropertiesReceivedAsync(TwinCollection desiredProperties)
+        {
+            if (desiredProperties.Contains("UpdateInterval"))
+            {
+                if (GetSimulation() != null)
+                {
+                    GetSimulation().UpdateInterval = desiredProperties["UpdateInterval"];
+                } else
+                {
+                    _updateInterval = desiredProperties["UpdateInterval"];
+                }
+                
+                Helper.WriteLine($"Updated UpdateInterval {desiredProperties["UpdateInterval"]} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
+            }
+
+            if (desiredProperties.Contains("LocEnd") && desiredProperties["LocEnd"] != _locEnd && desiredProperties["LocEnd"] != String.Empty || desiredProperties.Contains("LocStart") && desiredProperties["LocStart"] != _locStart && desiredProperties["LocStart"] != String.Empty)
+            {
+                _locEnd = desiredProperties["LocEnd"];
+                _locStart = desiredProperties["LocStart"];
+                Helper.WriteLine($"Updated location {_locStart} -> {_locEnd}.", ConsoleColor.White, ConsoleColor.DarkYellow);
+                await Stop();
+                _ = RunAsync();
+            }
         }
     }
 }

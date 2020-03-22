@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using VehicleDemonstrator.Module.Location;
 using VehicleDemonstrator.Shared.Telemetry;
 
-namespace LocationModule
+namespace VehicleDemonstrator.Shared.SimulationEnvironment
 {
-    abstract class Simulation
+    public abstract class Simulation
     {
         private SimulationHost simulationHost;
 
