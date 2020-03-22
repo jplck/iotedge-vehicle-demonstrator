@@ -1,6 +1,6 @@
 ﻿using AzureMapsToolkit.Common;
+using LocationModule;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,60 +10,37 @@ using VehicleDemonstrator.Shared.Telemetry.Odometry;
 
 namespace VehicleDemonstrator.Module.Location
 {
-    interface ISimulationReceiver
+    class DriveSimulation: Simulation
     {
-        void TelemetryReceived(TelemetrySegment telemetry);
-    }
+        private int currentSpeed = 50;
+        private RouteDirectionsResult gpx;
+        private double accTripDistance;
+        private Stopwatch tripStopwatch;
 
-    interface ISimulationHost
-    {
-        void SendSimulatedTelemetry(TelemetrySegment telemetry);
-    }
-
-    enum SimulationRunType
-    {
-        Route,
-        Track,
-        Waypoint
-    }
-
-    class DriveSimulation
-    {
-        private int _currentSpeed = 50;
-        private ISimulationHost _simulationHost;
-        private RouteDirectionsResult _gpx;
-        public int UpdateInterval = 1000;
-        private CancellationToken _cancellationToken;
-        private double _accTripDistance;
-        private Stopwatch _tripStopwatch;
-
-        public DriveSimulation(RouteDirectionsResult gpx, int updateInterval, ISimulationHost simulationHost, CancellationToken cancellationToken)
+        public DriveSimulation(RouteDirectionsResult gpx, int updateInterval, SimulationHost simulationHost): base(updateInterval, simulationHost)
         {
-            _gpx = gpx;
-            UpdateInterval = updateInterval;
-            _simulationHost = simulationHost;
-            _cancellationToken = cancellationToken;
+            this.gpx = gpx;
         }
 
-        public async Task Run(SimulationRunType runType)
+        public override async Task RunAsync()
         {
-            for (int l = 0; l < _gpx.Legs.Length; l++)
+            for (int l = 0; l < gpx.Legs.Length; l++)
             {
-                var leg = _gpx.Legs[l];
-                await RunItems(leg);
+                var leg = gpx.Legs[l];
+                await RunItemsAsync(leg);
             }
         }
 
-        public async Task RunItems(RouteResultLeg leg)
+        public async Task RunItemsAsync(RouteResultLeg leg)
         {
-            _tripStopwatch = new Stopwatch();
-            _accTripDistance = 0;
+            tripStopwatch = new Stopwatch();
+            accTripDistance = 0;
 
             string tripGuid = Guid.NewGuid().ToString();
 
-            _tripStopwatch.Start();
+            tripStopwatch.Start();
 
-            AzureMapsToolkit.Common.Coordinate previousPoint = null;
+            Coordinate previousPoint = null;
             for (int p = 0; p < leg.Points.Length; p++)
             {
                 var point = leg.Points[p];
@@ -71,14 +48,14 @@ namespace VehicleDemonstrator.Module.Location
                 Console.WriteLine("Read coordinates...");
                 if (previousPoint != null)
                 {
-                    await Drive(previousPoint, point, tripGuid);
+                    await DriveAsync(previousPoint, point, tripGuid);
                 }
                 previousPoint = point;
-                _cancellationToken.ThrowIfCancellationRequested();
+                ListenToCancellationRequests();
             }
         }
 
-        private async Task Drive(Coordinate startPoint, Coordinate endPoint, string tripGuid)
+        private async Task DriveAsync(Coordinate startPoint, Coordinate endPoint, string tripGuid)
         {
             var start = new Point(startPoint);
             var end = new Point(endPoint);
@@ -91,7 +68,7 @@ namespace VehicleDemonstrator.Module.Location
                 /*
                  * Calculate the distance the vehicle drives in [m/s] based on an update interval factor in [s] and the current speed.
                  * */
-                double distanceInTimeInterval = ((_currentSpeed * 1000) / 3600) * TimeSpan.FromMilliseconds(UpdateInterval).TotalSeconds;
+                double distanceInTimeInterval = ((currentSpeed * 1000) / 3600) * TimeSpan.FromMilliseconds(UpdateInterval).TotalSeconds;
 
                 /*
                  * Calculate the overall distance between the start and end point of the drive. Multiply the percentage 
@@ -99,7 +76,7 @@ namespace VehicleDemonstrator.Module.Location
                  * 
                  * */
                 double distance = fullDistance * (percentage > 0 ? 1 - percentage : 1.0);
-                _accTripDistance += distance;
+                accTripDistance += distance;
                 /*
                  * Calculate how much of percent the vehicle drives off of the overall distance
                  * */
@@ -112,33 +89,33 @@ namespace VehicleDemonstrator.Module.Location
 
                 Console.WriteLine($"Percentage driven: {100*Math.Round(percentage, 2)}%");
 
-                var timeSinceStart = _tripStopwatch.Elapsed.TotalSeconds;
+                var timeSinceStart = tripStopwatch.Elapsed.TotalSeconds;
 
                 if (percentage == 1)
                 {
                     var coords = end;
-                    var trip = new Trip(tripGuid, coords, _accTripDistance, timeSinceStart);
-                    _simulationHost.SendSimulatedTelemetry(trip);
+                    var trip = new Trip(tripGuid, coords, accTripDistance, timeSinceStart);
+                    PushTelemetryToHost(trip);
                     await Task.Delay(UpdateInterval);
                 }
                 else
                 {
                     Point newCoord = Util.NewCoordinates(start, end, percentage);
-                    var trip = new Trip(tripGuid, newCoord, _accTripDistance, timeSinceStart);
-                    _simulationHost.SendSimulatedTelemetry(trip);
+                    var trip = new Trip(tripGuid, newCoord, accTripDistance, timeSinceStart);
+                    PushTelemetryToHost(trip);
                     await Task.Delay(UpdateInterval);
                 }
 
-                _cancellationToken.ThrowIfCancellationRequested();
+                ListenToCancellationRequests();
             }
         }
 
-        public void InputTelemetry(TelemetrySegment telemetry)
+        public override void InputExternalTelemetry(TelemetrySegment telemetry)
         {
             if (telemetry.GetTelemetryType() == TelemetryType.Odometry)
             {
                 var odometry = TelemetrySegmentFactory<Odometry>.FromJsonString(telemetry.ToJson());
-                _currentSpeed = odometry.GetSpeed();
+                currentSpeed = odometry.GetSpeed();
 
                 Console.BackgroundColor = ConsoleColor.Blue;
                 Console.ForegroundColor = ConsoleColor.White;

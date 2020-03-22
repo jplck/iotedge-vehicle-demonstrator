@@ -1,11 +1,12 @@
 ﻿using Microsoft.Azure.Devices.Shared;
+using System.Threading.Tasks;
 using VehicleDemonstrator.Shared.Connectivity;
 
 namespace VehicleDemonstrator.Module.Location
 {
     interface IModuleTwin
     {
-        void DeviceTwinUpdateReceived(VehicleModuleTwin twin);
+        Task DeviceTwinUpdateReceivedAsync(VehicleModuleTwin twin);
     }
 
     class VehicleModuleTwin : ModuleTwin
@@ -18,9 +19,7 @@ namespace VehicleDemonstrator.Module.Location
         public string RouteFile { get; set; }
         public int UpdateInterval { get; set; }
         public bool SimulationStatus { get; set; }
-
         public string LocStart { get; set; }
-
         public string LocEnd { get; set; }
 
         public VehicleModuleTwin(IModuleTwin twinDelegate)
@@ -35,7 +34,7 @@ namespace VehicleDemonstrator.Module.Location
             UpdateInterval = !desiredProperties.Contains("UpdateInterval") ? _updateIntervalDefault : desiredProperties["UpdateInterval"];
             LocStart = !desiredProperties.Contains("LocStart") ? _locStartDefault : desiredProperties["LocStart"];
             LocEnd = !desiredProperties.Contains("LocEnd") ? _locEndDefault : desiredProperties["LocEnd"];
-            _delegate.DeviceTwinUpdateReceived(this);
+            _delegate.DeviceTwinUpdateReceivedAsync(this);
         }
 
         public override TwinCollection ProvideReportedProperties()

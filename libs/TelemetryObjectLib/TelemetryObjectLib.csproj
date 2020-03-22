@@ -10,8 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AzureMapsRestToolkit" Version="4.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MapsToolkit\AzureMapsRestToolkit\AzureMapsRestToolkit\AzureMapsRestToolkit.csproj" />
   </ItemGroup>
 
 </Project>

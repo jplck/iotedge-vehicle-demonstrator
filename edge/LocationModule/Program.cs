@@ -25,9 +25,9 @@ namespace VehicleDemonstrator.Module.Location
 
         static async Task Init()
         {
-            SimulationHost sim = new SimulationHost();
-            await sim.Setup();
-            await sim.Run();
+            DriveSimulationHost host = new DriveSimulationHost();
+            await host.SetupAsync();
+            await host.RunAsync();
         }
 
 

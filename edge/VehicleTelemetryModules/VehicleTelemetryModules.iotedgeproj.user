@@ -5,6 +5,6 @@
     <EdgeDockerTlsVerify />
     <EdgeDockerCertPath />
     <EdgeAdditionalVars />
-    <SimulatorPath>C:\Users\japollac\Documents\Visual Studio 2019\iotedgehubdev\v0.13.0\iotedgehubdev</SimulatorPath>
+    <SimulatorPath>C:\Users\janp\Documents\Visual Studio 2019\iotedgehubdev\v0.13.0\iotedgehubdev</SimulatorPath>
   </PropertyGroup>
 </Project>
