@@ -39,7 +39,7 @@ steps:
   inputs:
     action: 'Push module images'
     containerregistrytype: 'Azure Container Registry'
-    azureSubscriptionEndpoint: 'Azure Internal Consumption(ef4a11cd-7f45-41ab-b4a3-02776b287779)'
+    azureSubscriptionEndpoint: 'connection1'
     azureContainerRegistry: '{"loginServer":"iotmoduleregistry.azurecr.io", "id" : "/subscriptions/ef4a11cd-7f45-41ab-b4a3-02776b287779/resourceGroups/iot-demo-rg/providers/Microsoft.ContainerRegistry/registries/iotmoduleregistry"}'
     templateFilePath: '$(ProjectPath)/deployment.template.json'
     defaultPlatform: 'amd64'
