@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using VehicleDemonstrator.Shared.Telemetry;
 
@@ -8,27 +9,20 @@ namespace VehicleDemonstrator.Shared.SimulationEnvironment
     {
         private SimulationHost simulationHost;
 
-        private CancellationToken cancellationToken;
-
-        public int UpdateInterval = 1000;
+        public CancellationToken CT { get; set; }
 
         public abstract void InputExternalTelemetry(TelemetrySegment telemetry);
 
         public abstract Task RunAsync();
 
-        public Simulation( int updateInterval, SimulationHost host) 
+        public Simulation(SimulationHost host) 
         {
-            UpdateInterval = updateInterval;
+            _ = host ?? throw new ArgumentNullException("host", "SimulationHost cannot be null");
             simulationHost = host;
-        }
-
-        public void SetCancellationToken(CancellationToken ct)
-        {
-            cancellationToken = ct;
         }
 
         public void PushTelemetryToHost(TelemetrySegment telemetry) => simulationHost.DispatchToOutputs(telemetry);
 
-        public void ListenToCancellationRequests() => cancellationToken.ThrowIfCancellationRequested();
+        public void ListenToCancellationRequests() => CT.ThrowIfCancellationRequested();
     }
 }

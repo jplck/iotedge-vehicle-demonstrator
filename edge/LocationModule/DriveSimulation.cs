@@ -20,11 +20,14 @@ namespace VehicleDemonstrator.Module.Location
         private double lastMeasuredStopwatch = 0;
         private double prevSpeedLimit = 0;
         private Maps maps;
+        private SimulationHost _host;
 
-        public DriveSimulation(RouteDirectionsResult gpx, int updateInterval, DriveSimulationHost simulationHost): base(updateInterval, simulationHost)
+        public DriveSimulation(RouteDirectionsResult gpx, DriveSimulationHost simulationHost): base(simulationHost)
         {
+            _ = gpx ?? throw new ArgumentNullException("gpx", "Route cannot be null.");
             this.gpx = gpx;
             maps = simulationHost._maps;
+            _host = simulationHost;
         }
 
         public override async Task RunAsync()
@@ -73,7 +76,7 @@ namespace VehicleDemonstrator.Module.Location
                 /*
                  * Calculate the distance the vehicle drives in [m/s] based on an update interval factor in [s] and the current speed.
                  * */
-                double distanceInTimeInterval = ((currentSpeed * 1000) / 3600) * TimeSpan.FromMilliseconds(UpdateInterval).TotalSeconds;
+                double distanceInTimeInterval = ((currentSpeed * 1000) / 3600) * TimeSpan.FromMilliseconds(_host.UpdateInterval).TotalSeconds;
 
                 /*
                  * Calculate the overall distance between the start and end point of the drive. Multiply the percentage 
@@ -103,7 +106,7 @@ namespace VehicleDemonstrator.Module.Location
                     var coords = end;
                     var trip = new Trip(tripGuid, coords, accTripDistance, timeSinceStart);
                     PushTelemetryToHost(trip);
-                    await Task.Delay(UpdateInterval);
+                    await Task.Delay(_host.UpdateInterval);
                 }
                 else
                 {
@@ -111,7 +114,7 @@ namespace VehicleDemonstrator.Module.Location
                     var speedLimit = await FetchSpeedLimit(elapsed, newCoord.GetLatitude(), newCoord.GetLongitude());
                     var trip = new Trip(tripGuid, newCoord, accTripDistance, timeSinceStart, speedLimit ?? prevSpeedLimit);
                     PushTelemetryToHost(trip);
-                    await Task.Delay(UpdateInterval);
+                    await Task.Delay(_host.UpdateInterval);
                 }
 
                 ListenToCancellationRequests();

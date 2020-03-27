@@ -11,11 +11,23 @@ namespace VehicleDemonstrator.Shared.SimulationEnvironment
 {
     public abstract class SimulationHost: ITwinUpdateReceiver
     {
-        private ModuleTwin _twin;
         private CancellationTokenSource _cts;
         private Simulation sim;
         public bool SimulationStatus = false;
         private ModuleClient client;
+
+        public ModuleTwin Twin { get; set; }
+
+        public Simulation? Sim {
+            get { return sim; }
+            set {
+                _cts = new CancellationTokenSource();
+                sim = value;
+                sim.CT = _cts.Token;
+            } 
+        }
+
+        public int UpdateInterval = 1000;
 
         public async Task SetupConnectionAsync()
         {
@@ -24,25 +36,14 @@ namespace VehicleDemonstrator.Shared.SimulationEnvironment
 
             client = hub.GetClient();
 
-            _twin = new ModuleTwin(this);
-            await _twin.Init();
+            Twin = new ModuleTwin(this);
+            await Twin.Init();
 
             await client.SetMethodHandlerAsync("Stop", OnStopRequest, null);
             await client.SetMethodHandlerAsync("Reset", OnResetRequest, null);
         }
 
-        public void ConnectSimulation(Simulation simulation)
-        {
-            _cts = new CancellationTokenSource();
-            sim = simulation;
-            sim.SetCancellationToken(_cts.Token);
-        }
-
         public async Task RunSimulationAsync() => await sim.RunAsync();
-
-        public ModuleTwin GetTwin() => _twin;
-
-        public Simulation GetSimulation() => sim;
 
         public abstract Task RunAsync();
 
@@ -68,18 +69,15 @@ namespace VehicleDemonstrator.Shared.SimulationEnvironment
 
         public async Task Stop()
         {
-            if (_cts != null)
-            {
-                _cts.Cancel();
-                _cts.Dispose();
-                sim = null;
-                _cts = null;
+            _cts.Cancel();
+            _cts.Dispose();
+            sim = null;
+            _cts = null;
 
-                while (SimulationStatus)
-                {
-                    Helper.WriteLine("Waiting for simulation to stop...", ConsoleColor.White, ConsoleColor.DarkYellow);
-                    await Task.Delay(250);
-                }
+            while (SimulationStatus)
+            {
+                Helper.WriteLine("Waiting for simulation to stop...", ConsoleColor.White, ConsoleColor.DarkYellow);
+                await Task.Delay(250);
             }
         }
 

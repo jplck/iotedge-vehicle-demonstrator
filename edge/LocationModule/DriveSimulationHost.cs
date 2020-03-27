@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using VehicleDemonstrator.Shared.Util;
 using VehicleDemonstrator.Shared.Telemetry;
 using VehicleDemonstrator.Shared.Telemetry.Odometry;
-using System.Net.Http;
 using LocationModule;
 using VehicleDemonstrator.Shared.SimulationEnvironment;
 using Microsoft.Azure.Devices.Shared;
@@ -16,7 +15,6 @@ namespace VehicleDemonstrator.Module.Location
     {
         private const string OdometerInputName = "odometerInput";
         private const string OutputName = "locationModuleOutput";
-        private HttpClient _httpClient = new HttpClient();
         public Maps _maps;
         private string _locStart = "Bremen";
         private string _locEnd = "Hamburg";
@@ -29,8 +27,6 @@ namespace VehicleDemonstrator.Module.Location
             var mapsKey = Environment.GetEnvironmentVariable("AZURE_MAPS_KEY");
             _maps = new Maps(mapsKey);
 
-            _httpClient.BaseAddress = new Uri("https://atlas.microsoft.com");
-
             await AddInputHandlerAsync(OdometerInputName, OdometerMessageReceivedAsync);
         }
 
@@ -42,7 +38,7 @@ namespace VehicleDemonstrator.Module.Location
                 {
                     var route = await _maps.GetRoute(_locStart, _locEnd);
                     Helper.WriteLine("Route calculated.", ConsoleColor.White, ConsoleColor.DarkYellow);
-                    ConnectSimulation(new DriveSimulation(route, _updateInterval, this));
+                    Sim = (new DriveSimulation(route, this));
                     SimulationStatus = true;
                     Helper.WriteLine("Simulation setup completed.", ConsoleColor.White, ConsoleColor.DarkYellow);
 
@@ -62,11 +58,11 @@ namespace VehicleDemonstrator.Module.Location
 
         private async Task SetTwinSimulationStatus(bool status)
         {
-            GetTwin().AddReportedProperties(new TwinCollection()
+            Twin.AddReportedProperties(new TwinCollection()
             {
                 ["SimulationStatus"] = status
             });
-            await GetTwin().SendReportedProperties();
+            await Twin.SendReportedProperties();
         }
 
         private async Task<MessageResponse> OdometerMessageReceivedAsync(Message message, object userContext)
@@ -75,7 +71,7 @@ namespace VehicleDemonstrator.Module.Location
             string messageString = Encoding.UTF8.GetString(messageBytes);
             Console.WriteLine(messageString);
             Odometry odometry = TelemetrySegmentFactory<Odometry>.FromJsonString(messageString);
-            GetSimulation().InputExternalTelemetry(odometry);
+            Sim.InputExternalTelemetry(odometry);
 
             return await Task.FromResult(MessageResponse.Completed);
         }
@@ -89,14 +85,7 @@ namespace VehicleDemonstrator.Module.Location
         {
             if (desiredProperties.Contains("UpdateInterval"))
             {
-                if (GetSimulation() != null)
-                {
-                    GetSimulation().UpdateInterval = desiredProperties["UpdateInterval"];
-                } else
-                {
-                    _updateInterval = desiredProperties["UpdateInterval"];
-                }
-                
+                _updateInterval = desiredProperties["UpdateInterval"];
                 Helper.WriteLine($"Updated UpdateInterval {desiredProperties["UpdateInterval"]} received.", ConsoleColor.White, ConsoleColor.DarkYellow);
             }
 
