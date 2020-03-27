@@ -99,13 +99,10 @@
       "properties.desired": {
         "schemaVersion": "1.0",
         "routes": {
-          "odometermoduleToLocationmodule": "FROM /messages/modules/OdometerModule/outputs/odometerOutput INTO BrokeredEndpoint(\"/modules/LocationModule/inputs/odometerInput\")",
-          "telemetrydispatchermoduleToIoTHub": "FROM /messages/modules/TelemetryDispatcherModule/outputs/* INTO $upstream",
+          "odometermoduleToLocationmodule": "FROM /messages/* INTO BrokeredEndpoint(\"/modules/LocationModule/inputs/odometerInput\")",
           "odometermoduleToDispatcher": "FROM /messages/modules/OdometerModule/outputs/odometerOutput INTO BrokeredEndpoint(\"/modules/TelemetryDispatcherModule/inputs/telemetryInput\")",
           "locationmoduleToDispatcher": "FROM /messages/modules/LocationModule/outputs/locationModuleOutput INTO BrokeredEndpoint(\"/modules/TelemetryDispatcherModule/inputs/telemetryInput\")",
-          "OdometerModuleToIoTHub": "FROM /messages/modules/OdometerModule/outputs/* INTO $upstream",
-          "TelemetryDispatcherModuleToIoTHub": "FROM /messages/modules/TelemetryDispatcherModule/outputs/* INTO $upstream",
-          "LocationModuleToIoTHub": "FROM /messages/modules/LocationModule/outputs/* INTO $upstream"
+          "TelemetryDispatcherModuleToIoTHub": "FROM /messages/modules/TelemetryDispatcherModule/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
@@ -114,7 +111,6 @@
     },
     "LocationModule": {
       "properties.desired": {
-        "RouteFile": "routes/bswob.gpx",
         "UpdateInterval": 1000
       }
     },
